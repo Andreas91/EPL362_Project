@@ -48,6 +48,7 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 491, 431);
 		contentPane = new JPanel();
@@ -70,7 +71,9 @@ public class Login extends JFrame {
 				else if (inPassword.getPassword().length==0)
 					JOptionPane.showMessageDialog(null, "Password field is empty!");
 				else{
-					JOptionPane.showMessageDialog(null, "Get role");
+					LegalStaff ls = new LegalStaff();	// Create Legal Staff window
+					ls.setVisible(true);				// Show Legal Staff window
+					setVisible(false);					// Hide Login window
 				}
 				
 			}
