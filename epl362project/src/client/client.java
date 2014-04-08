@@ -3,22 +3,25 @@ package client;
 import java.io.*;
 import java.net.*;
 
-class client {
+public class client {
 
 	private static Socket sock;
 
 	public static int verifyUser(String username, String password)
 			throws IOException {
-		if (!openSocket())
+		if (!openSocket()){
 			throw new IOException();
-		if (!send("VERIFY", username, password))
+		}
+		if (!send("VERIFY", username, password)){
 			throw new IOException();
+		}
 		String serverResponse = receive();
+		System.out.println("Server responded: " +  serverResponse);
 		int retVal;
 		try {
-			retVal = Integer.parseInt(serverResponse); // Server should send one
-														// int as response in
-														// this case
+			// Server should send one int as response in this case
+			String code = (serverResponse.split(" "))[0];
+			retVal = Integer.parseInt(code); 
 
 		} catch (NumberFormatException e) {
 			throw new IOException();
@@ -59,7 +62,8 @@ class client {
 			DataOutputStream outToServer = new DataOutputStream(
 					sock.getOutputStream());
 			for (String i : data)
-				outToServer.writeBytes(i + ' ');
+				outToServer.writeBytes(i + " ");
+			outToServer.writeBytes("\n");
 		} catch (IOException e) {
 			System.err.println("Unable to send data to server:");
 			System.err.println(e.getStackTrace());
@@ -85,5 +89,14 @@ class client {
 		}
 		return ret;
 
+	}
+	public static void main(String argv[]){
+		try{
+		System.out.println(verifyUser("user","pass:"));
+		}catch (IOException e){
+			System.err.println("Client main exception:");
+			System.err.println(e.getStackTrace());
+			
+		}
 	}
 }
