@@ -90,13 +90,4 @@ public class client {
 		return ret;
 
 	}
-	public static void main(String argv[]){
-		try{
-		System.out.println(verifyUser("user","pass:"));
-		}catch (IOException e){
-			System.err.println("Client main exception:");
-			System.err.println(e.getStackTrace());
-			
-		}
-	}
 }
