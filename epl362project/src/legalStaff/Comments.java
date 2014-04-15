@@ -38,7 +38,7 @@ public class Comments extends JFrame {
 	 */
 	public Comments(int cid) {
 		setTitle("Comments");
-		setBounds(100, 100, 511, 472);
+		setBounds(39, 431, 511, 472);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

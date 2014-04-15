@@ -18,6 +18,7 @@ import javax.swing.JCheckBox;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
 public class LSApp extends JFrame {
@@ -37,13 +38,15 @@ public class LSApp extends JFrame {
 	
 	private boolean tFlag;				// Temporary stores Client's Flag if edit is cancel
 	private String tName;				// Temporary stores Client's Name if edit is cancel
+	
+	private Comments comm;				// Comment window for a client
 
 	/**
 	 * Create the frame.
 	 */
 	public LSApp() {
 		setTitle("My Appointments");
-		setBounds(550, 100, 615, 665);
+		setBounds(550, 100, 615, 750);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -208,7 +211,8 @@ public class LSApp extends JFrame {
 				}
 				else{
 					int cid = Integer.valueOf(CID.getText());
-					Comments comm = new Comments(cid);
+					if (comm!=null && comm.isVisible()) comm.dispose();
+					comm = new Comments(cid);
 					comm.setVisible(true);
 				}		
 			}
@@ -221,6 +225,30 @@ public class LSApp extends JFrame {
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setBounds(0, 420, 597, 2);
 		contentPane.add(separator_2);
+		
+		JLabel lblConsultation = new JLabel("Consultation:");
+		lblConsultation.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 16));
+		lblConsultation.setBounds(10, 430, 119, 30);
+		contentPane.add(lblConsultation);
+		
+		JLabel lblPrevious = new JLabel("Previous:");
+		lblPrevious.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 16));
+		lblPrevious.setBounds(301, 430, 119, 30);
+		contentPane.add(lblPrevious);
+		
+		JSeparator separator_3 = new JSeparator();
+		separator_3.setOrientation(SwingConstants.VERTICAL);
+		separator_3.setBounds(274, 420, 2, 115);
+		contentPane.add(separator_3);
+		
+		JButton button = new JButton("<<");
+		button.setBounds(247, 548, 57, 25);
+		contentPane.add(button);
+		
+		JSeparator separator_4 = new JSeparator();
+		separator_4.setOrientation(SwingConstants.VERTICAL);
+		separator_4.setBounds(274, 586, 2, 119);
+		contentPane.add(separator_4);
 		
 		// Fill Table with appointments
 		insertApp();
@@ -245,5 +273,10 @@ public class LSApp extends JFrame {
 		btnCSave.setEnabled(!btnCSave.isEnabled());
 		btnCCancel.setEnabled(!btnCCancel.isEnabled());
 		btnCCom.setEnabled(!btnCCom.isEnabled());
+	}
+	
+	public void kill(){
+		if (comm.isVisible()) comm.dispose();
+		dispose();
 	}
 }

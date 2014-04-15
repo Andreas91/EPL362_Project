@@ -38,6 +38,14 @@ public class LSMenu extends JFrame {
 		
 		// Logout Option in Menu Bar
 		JMenuItem mntmLogout = new JMenuItem("Logout");
+		mntmLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (lsa.isVisible()) lsa.kill();
+				client.Login login = new client.Login();
+				login.setVisible(true);
+				dispose();
+			}
+		});
 		mntmLogout.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		mnFile.add(mntmLogout);
 		contentPane = new JPanel();
