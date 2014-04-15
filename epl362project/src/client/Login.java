@@ -16,6 +16,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+@SuppressWarnings("serial")
 public class Login extends JFrame {
 
 	private JPanel contentPane;
@@ -74,8 +75,7 @@ public class Login extends JFrame {
 						case 0: // receptionist
 							break;
 						case 1:
-							LegalStaff ls = new LegalStaff(); // Create Legal
-																// Staff window
+							legalStaff.LSMenu ls = new legalStaff.LSMenu(); // Create Legal Staff window
 							ls.setVisible(true); // Show Legal Staff window
 							setVisible(false); // Hide Login window
 							break;
