@@ -13,9 +13,7 @@ public class SQLConnection {
 	private static Connection conn = null;
 
 	Connection getDBConnection() {
-		// Insert database server, name and password here!
-		// databaseName field might not be needed
-		String dbConnString = "jdbc:sqlserver://<host>:1433;databaseName=<dbname>;user=<username>;password=<passwd>;";
+		String dbConnString = "jdbc:sqlserver://apollo.in.cs.ucy.ac.cy:1433;databaseName=lawcs;user=lawcs;password=H9pCFzXb;";
 
 		// Load the driver
 		if (!dbDriverLoaded)
@@ -97,14 +95,14 @@ public class SQLConnection {
 		return true;
 	}
 	
-	public boolean insertUser(String username, int password, int role){
+	public boolean insertUser(String username, String password, int role){
 		if (conn == null)
 			return false;
 		try {
 			String statement = "INSERT INTO dbo.USERS (USERNAME,PASSWORD,ROLE) VALUES (?,?,?)";
 			PreparedStatement query = conn.prepareStatement(statement);
 			query.setString(1, username);
-			query.setInt(2, password);
+			query.setString(2, password);
 			query.setInt(3, role);
 			query.executeUpdate();
 		} catch (SQLException e) {
@@ -152,16 +150,88 @@ public class SQLConnection {
 		return true;
 	}
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		SQLConnection db = new SQLConnection();
-		conn = db.getDBConnection();
-
-		if (conn == null) {
-			System.err
-					.println("Cannot connect to database through main program");
-			return;
+	public boolean insertLegalOpinion(String description,Date date,int transaction){
+		if (conn == null)
+			return false;
+		try {
+			String statement = "INSERT INTO dbo.LEGAL_OPINION (DESCRIPTION,LODATE,TID) VALUES (?,?,?)";
+			PreparedStatement query = conn.prepareStatement(statement);
+			query.setString(1, description);
+			query.setDate(2, date);
+			query.setInt(3, transaction);
+			query.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
-
+	
+	public boolean insertLegalRecommendation(String description,String sideeffects,Date date){
+		if (conn == null)
+			return false;
+		try {
+			String statement = "INSERT INTO dbo.LEGAL_RECOMMENDATION (DESCRIPTION,SIDE_EFFECTS,LRDATE) VALUES (?,?,?)";
+			PreparedStatement query = conn.prepareStatement(statement);
+			query.setString(1, description);
+			query.setString(2, sideeffects);
+			query.setDate(3, date);
+			query.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean insertDispute(String description,int transaction,Date date){
+		if (conn == null)
+			return false;
+		try {
+			String statement = "INSERT INTO dbo.DISPUTE (DESCRIPTION,TID,DDATE) VALUES (?,?,?)";
+			PreparedStatement query = conn.prepareStatement(statement);
+			query.setString(1, description);
+			query.setInt(2, transaction);
+			query.setDate(3, date);
+			query.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean insertDisputeRecommendation(int recommendation, int dispute, boolean accepted){
+		if (conn == null)
+			return false;
+		try {
+			String statement = "INSERT INTO dbo.DISPUTE_RECOMMENDATION (LRID,DID,ACCEPTED) VALUES (?,?,?)";
+			PreparedStatement query = conn.prepareStatement(statement);
+			query.setInt(1, recommendation);
+			query.setInt(2, dispute);
+			query.setBoolean(3, accepted);
+			query.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean insertTransaction(String description, Date updatedate, String type){
+		if (conn == null)
+			return false;
+		try {
+			String statement = "INSERT INTO dbo.TRANSACTION (DESCRIPTION,UPDATE_DATE,TR_TYPE) VALUES (?,?,?)";
+			PreparedStatement query = conn.prepareStatement(statement);
+			query.setString(1, description);
+			query.setDate(2, updatedate);
+			query.setString(3, type);
+			query.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }
