@@ -30,7 +30,7 @@ public class client {
 		return retVal;
 	}
 
-	private static boolean openSocket() {
+	public static boolean openSocket() {
 		try {
 			sock = new Socket("localhost", 6789);
 		} catch (UnknownHostException e) {
@@ -45,7 +45,7 @@ public class client {
 		return true;
 	}
 
-	private static void closeSocket() {
+	public  static void closeSocket() {
 		if (!sock.isClosed())
 			try {
 				sock.close();
@@ -55,14 +55,14 @@ public class client {
 			}
 	}
 
-	private static boolean send(String... data) {
+	public static boolean send(String... data) {
 		if (!sock.isConnected())
 			return false;
 		try {
 			DataOutputStream outToServer = new DataOutputStream(
 					sock.getOutputStream());
 			for (String i : data)
-				outToServer.writeBytes(i + " ");
+				outToServer.writeBytes(i + ";");
 			outToServer.writeBytes("\n");
 		} catch (IOException e) {
 			System.err.println("Unable to send data to server:");
@@ -72,7 +72,7 @@ public class client {
 		return true;
 	}
 
-	private static String receive() {
+	public static String receive() {
 		if (!sock.isConnected())
 			return null;
 		String ret = new String();

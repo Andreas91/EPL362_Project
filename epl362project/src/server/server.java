@@ -80,12 +80,15 @@ public class server {
 	}
 
 	private static void callFunction(String clientData) {
-		String[] args = clientData.split(" ");
+		String[] args = clientData.split(";");
 		// Determine what kind of message was sent from client, what command to
 		// invoke
 		if (args[0].compareTo("VERIFY") == 0) {
 			int role = Verification.sVerifyUser(args[1], args[2]);
 			send(new String(""+role));
+		}
+		if (args[0].startsWith("SELECT")){
+			send(SQLConnection.rawSQL(args[0], Integer.parseInt(args[1])));
 		}
 	}
 

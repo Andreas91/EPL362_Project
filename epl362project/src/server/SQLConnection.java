@@ -6,13 +6,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class SQLConnection {
 
 	private static boolean dbDriverLoaded = false;
 	private static Connection conn = null;
 
-	Connection getDBConnection() {
+	public Connection getDBConnection() {
 		String dbConnString = "jdbc:sqlserver://apollo.in.cs.ucy.ac.cy:1433;databaseName=lawcs;user=lawcs;password=H9pCFzXb;";
 
 		// Load the driver
@@ -58,8 +59,9 @@ public class SQLConnection {
 		}
 		return true;
 	}
-	
-	public boolean insertClient(String firstName, String lastName, boolean flagged){
+
+	public boolean insertClient(String firstName, String lastName,
+			boolean flagged) {
 		if (conn == null)
 			return false;
 		try {
@@ -77,7 +79,8 @@ public class SQLConnection {
 		return true;
 	}
 
-	public boolean insertLawyer(String firstName, String lastName, String username, String email){
+	public boolean insertLawyer(String firstName, String lastName,
+			String username, String email) {
 		if (conn == null)
 			return false;
 		try {
@@ -94,8 +97,8 @@ public class SQLConnection {
 		}
 		return true;
 	}
-	
-	public boolean insertUser(String username, String password, int role){
+
+	public boolean insertUser(String username, String password, int role) {
 		if (conn == null)
 			return false;
 		try {
@@ -112,7 +115,8 @@ public class SQLConnection {
 		return true;
 	}
 
-	public boolean insertWarning(String username, int status, Date wDate, String details){
+	public boolean insertWarning(String username, int status, Date wDate,
+			String details) {
 		if (conn == null)
 			return false;
 		try {
@@ -130,7 +134,8 @@ public class SQLConnection {
 		return true;
 	}
 
-	public boolean insertCase(int appointment, int client, int laywer, int transaction, boolean attended, boolean scheduled){
+	public boolean insertCase(int appointment, int client, int laywer,
+			int transaction, boolean attended, boolean scheduled) {
 		if (conn == null)
 			return false;
 		try {
@@ -149,8 +154,9 @@ public class SQLConnection {
 		}
 		return true;
 	}
-	
-	public boolean insertLegalOpinion(String description,Date date,int transaction){
+
+	public boolean insertLegalOpinion(String description, Date date,
+			int transaction) {
 		if (conn == null)
 			return false;
 		try {
@@ -166,8 +172,9 @@ public class SQLConnection {
 		}
 		return true;
 	}
-	
-	public boolean insertLegalRecommendation(String description,String sideeffects,Date date){
+
+	public boolean insertLegalRecommendation(String description,
+			String sideeffects, Date date) {
 		if (conn == null)
 			return false;
 		try {
@@ -183,8 +190,8 @@ public class SQLConnection {
 		}
 		return true;
 	}
-	
-	public boolean insertDispute(String description,int transaction,Date date){
+
+	public boolean insertDispute(String description, int transaction, Date date) {
 		if (conn == null)
 			return false;
 		try {
@@ -200,8 +207,9 @@ public class SQLConnection {
 		}
 		return true;
 	}
-	
-	public boolean insertDisputeRecommendation(int recommendation, int dispute, boolean accepted){
+
+	public boolean insertDisputeRecommendation(int recommendation, int dispute,
+			boolean accepted) {
 		if (conn == null)
 			return false;
 		try {
@@ -217,8 +225,9 @@ public class SQLConnection {
 		}
 		return true;
 	}
-	
-	public boolean insertTransaction(String description, Date updatedate, String type){
+
+	public boolean insertTransaction(String description, Date updatedate,
+			String type) {
 		if (conn == null)
 			return false;
 		try {
@@ -233,5 +242,27 @@ public class SQLConnection {
 			return false;
 		}
 		return true;
+	}
+
+	public static String rawSQL(String stm, int colNum) {
+		SQLConnection ooh = new SQLConnection();
+		ooh.getDBConnection();
+		if (conn == null)
+			return null;
+		String ret = new String();
+		try {
+			Statement query = conn.createStatement(
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			ResultSet rs = query.executeQuery(stm);
+			while (rs.next()) {
+				for (int i = 1; i <= colNum; i++)
+					ret = ret + rs.getString(i) + ";";
+				ret = ret + "\n";
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ret;
 	}
 }

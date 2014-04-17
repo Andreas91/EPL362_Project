@@ -16,6 +16,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import server.SQLConnection;
+
 @SuppressWarnings("serial")
 public class Login extends JFrame {
 
