@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,9 +15,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import server.SQLConnection;
-
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "deprecation"})
 public class Login extends JFrame {
 
 	private JPanel contentPane;
@@ -70,10 +67,8 @@ public class Login extends JFrame {
 					JOptionPane.showMessageDialog(null,
 							"Password field is empty!");
 				else {
-					try {
-						int role = client.verifyUser(inUsername.getText(),
-								inPassword.getPassword().toString());
-						switch (role) {
+					int role = verifyUser();
+					switch (role) {
 						case 0: // receptionist
 							break;
 						case 1:
@@ -86,16 +81,9 @@ public class Login extends JFrame {
 						case 3: // Management
 							break;
 						default:
-							JOptionPane
-									.showMessageDialog(null,
-											"Unable to login, please verify username/password.");
-						}
-					} catch (IOException ex) {
-						System.err.println("Cannot communicate with server!");
+							JOptionPane.showMessageDialog(null,"Unable to login, please verify username/password.");
 					}
-
 				}
-
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -138,5 +126,19 @@ public class Login extends JFrame {
 		inPassword.setBounds(192, 290, 173, 22);
 		contentPane.add(inPassword);
 
+	}
+	
+	private int verifyUser(){
+		String user = inUsername.getText();
+		String pass = inPassword.getText();
+		Object o = "SELECT * FROM dbo.USERS WHERE USERNAME = '"+user+"' AND PASSWORD = '"+pass+"'";
+		Object[][] rs = (Object[][]) client.send(o);
+		if (rs==null) return -1;
+		try{
+			String role = rs[1][2].toString();
+			return Integer.valueOf(role);
+		}catch(ArrayIndexOutOfBoundsException e){
+			return -1;
+		}
 	}
 }

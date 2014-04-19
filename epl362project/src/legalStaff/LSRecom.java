@@ -15,10 +15,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JTable;
 
+import client.client;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","rawtypes","unchecked"})
 public class LSRecom extends JFrame {
 
 	private JPanel contentPane;
@@ -66,16 +68,11 @@ public class LSRecom extends JFrame {
 		contentPane.add(scrollPane);
 		
 		// Legal Recommendations ComboBox
-		String[] listRecom = {
-				"Recommendation 1", 
-				"Recommendation 2", 
-				"Recommendation 3", 
-				"Recommendation 4", 
-				"Recommendation 5" 
-		};
-		//client.openSocket();
-		//client.send("SELECT LRID,[DESCRIPTION] FROM dbo.LEGAL_RECOMMENDATION","2");
-		//String[] listRecom = client.receive().split("\n");
+		Object[][] rs = (Object[][]) client.send("SELECT LRID,[DESCRIPTION] FROM dbo.LEGAL_RECOMMENDATION");
+		String[] listRecom = new String[rs.length-1];
+		for (int i=0;i<listRecom.length;i++){
+			listRecom[i]=rs[i+1][1].toString();
+		}
 		cbbRec = new JComboBox(listRecom);
 		cbbRec.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		cbbRec.setBounds(12, 306, 452, 38);

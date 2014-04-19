@@ -395,6 +395,9 @@ public class LSApp extends JFrame {
 	
 	private void closeApp(){
 		clearClient();
+		if (lso!=null && lso.isVisible()) lso.dispose();
+		if (lsr!=null && lsr.isVisible()) lsr.dispose();
+		if (comm!= null && comm.isVisible()) comm.dispose();
 		
 		// Set access to appointments controls
 		this.tableApp.setEnabled(true);

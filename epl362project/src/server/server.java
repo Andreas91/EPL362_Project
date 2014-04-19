@@ -2,21 +2,58 @@ package server;
 
 import java.io.*;
 import java.net.*;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
-/*
- * Supported commands:
- * VERIFY [username] [password]
- * --returns -1,0,1,2,3
- */
+import javax.swing.JOptionPane;
 
-public class server {
+public class server implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static ServerSocket sock;
 	private static Socket cSock;
-
+	private static boolean dbDriverLoaded = false;
+	private static Connection conn = null;
+	
+	private static boolean getDBConnection() {
+		
+		String dbConnString = "jdbc:sqlserver://apollo.in.cs.ucy.ac.cy:1433;databaseName=lawcs;user=lawcs;password=H9pCFzXb;";
+		
+		// Load the driver
+		if (!dbDriverLoaded)
+			try {
+				Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+				dbDriverLoaded = true;
+			} catch (ClassNotFoundException e) {
+				JOptionPane.showMessageDialog(null, "Cannot load DB driver!");
+				return false;
+			}
+		
+		// Establish connection
+		try {
+			if (conn == null || conn.isClosed())
+				conn = DriverManager.getConnection(dbConnString);
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Cannot connect to the DB!\nGot error:" +
+			e.getErrorCode() + "\nSQL State: " + e.getSQLState() + "\nMessage: " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+	
 	private static boolean openSocket() {
 		try {
 			sock = new ServerSocket(6789);
+			cSock = sock.accept();
 		} catch (IOException e) {
 			System.err.println("Unable to create server socket:");
 			System.err.println(e.getStackTrace());
@@ -24,6 +61,7 @@ public class server {
 		}
 		return true;
 	}
+	
 
 	private static void closeSocket() {
 		if (!sock.isClosed())
@@ -41,62 +79,80 @@ public class server {
 				System.err.println(e.getStackTrace());
 			}
 	}
+	
 
-	private static boolean send(String... data) {
-		if (!cSock.isConnected())
-			return false;
+	
+	private static ResultSet getResultSet(String str) {
+		Statement stmt = null;
+		ResultSet rs = null;
 		try {
-			DataOutputStream outToClient = new DataOutputStream(
-					cSock.getOutputStream());
-			for (String i : data)
-				outToClient.writeBytes(i + ' ');
-		} catch (IOException e) {
-			System.err.println("Unable to send data to client:");
-			System.err.println(e.getStackTrace());
-			return false;
-		}
-		return true;
-	}
-
-	private static String receive() {
-		if (!cSock.isConnected())
-			return null;
-		String ret = new String();
-		String temp = new String();
-		try {
-			BufferedReader inFromClient = new BufferedReader(
-					new InputStreamReader(cSock.getInputStream()));
-			if ((ret = inFromClient.readLine()) == null) // Should only read one
-															// line from client
-				throw new IOException();
-			callFunction(ret);
-		} catch (IOException e) {
-			System.err.println("Unable to read data from client:");
-			System.err.println(e.getStackTrace());
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(str);
+			return rs;
+		} catch (SQLException e) {
+			e.printStackTrace();
 			return null;
 		}
-		return ret;
-
 	}
-
-	private static void callFunction(String clientData) {
-		String[] args = clientData.split(";");
-		// Determine what kind of message was sent from client, what command to
-		// invoke
-		if (args[0].compareTo("VERIFY") == 0) {
-			int role = Verification.sVerifyUser(args[1], args[2]);
-			send(new String(""+role));
-		}
-		if (args[0].startsWith("SELECT")){
-			send(SQLConnection.rawSQL(args[0], Integer.parseInt(args[1])));
-		}
+	
+	
+	public static Object[][] executeQuery(String query) throws SQLException{
+	    ResultSet rs = getResultSet(query);
+	    if (rs==null) return null; 
+	    ResultSetMetaData rsMetaData = rs.getMetaData();
+	    int columnCount = rsMetaData.getColumnCount();
+	    ArrayList<Object[]> result = new ArrayList<Object[]>();
+	    Object[] header = new Object[columnCount];
+	    
+	    // Get the labels
+	    for (int i=1; i <= columnCount; i++){
+	        Object label = rsMetaData.getColumnLabel(i);
+	        header[i-1] = label;
+	    }
+	    
+	    // Get the results
+	    while (rs.next()){
+	        Object[] str = new Object[columnCount];
+	        for (int i=1; i <= columnCount; i++){
+	            Object obj = rs.getObject(i);
+	            str[i-1] = obj;
+	        }
+	        result.add(str);
+	    }
+	    
+	    // Create 2D Object array from ResultSet
+	    int resultLength = result.size();
+	    Object[][] finalResult = new Object[resultLength+1][columnCount];
+	    try{
+	    	finalResult[0] = header;
+	    	for(int i=1;i<=resultLength;i++){
+		        Object[] row = result.get(i-1);
+		        finalResult[i] = row;
+		    }
+	    }catch(ArrayIndexOutOfBoundsException e){
+	    	return null;
+	    }
+	    return finalResult;
 	}
 
 	public static void main(String argv[]) throws Exception {
+		
+		System.out.print("> Connecting with database...");
+		if (!getDBConnection()){
+			System.out.println("Error!");
+			return;
+		}
+		System.out.println("Done!");
+		
+		System.out.println("> Waiting for client...");
 		while (true) {
 			openSocket();
-			cSock = sock.accept();
-			receive();
+			ObjectInputStream inFromClient = new ObjectInputStream(cSock.getInputStream());
+			ObjectOutputStream outToClient = new ObjectOutputStream(cSock.getOutputStream());
+			Object Oin = inFromClient.readObject();
+			System.out.println("> Receive: " + (String)Oin);
+			Object Oout = executeQuery((String)Oin);
+			outToClient.writeObject(Oout);
 			closeSocket();
 		}
 	}
