@@ -134,6 +134,18 @@ public class server implements Serializable{
 	    }
 	    return finalResult;
 	}
+	
+	public static Object executeUpdate(String str){
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			stmt.executeUpdate(str);
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	public static void main(String argv[]) throws Exception {
 		
@@ -149,9 +161,13 @@ public class server implements Serializable{
 			openSocket();
 			ObjectInputStream inFromClient = new ObjectInputStream(cSock.getInputStream());
 			ObjectOutputStream outToClient = new ObjectOutputStream(cSock.getOutputStream());
-			Object Oin = inFromClient.readObject();
-			System.out.println("> Receive: " + (String)Oin);
-			Object Oout = executeQuery((String)Oin);
+			String Oin = (String)inFromClient.readObject();
+			System.out.println("> Receive: " + Oin);
+			Object Oout=null;
+			if (Oin.charAt(0)=='S' || Oin.charAt(0)=='s')
+				Oout = executeQuery(Oin);
+			else
+				Oout = executeUpdate(Oin);
 			outToClient.writeObject(Oout);
 			closeSocket();
 		}
