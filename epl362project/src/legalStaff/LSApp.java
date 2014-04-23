@@ -17,11 +17,13 @@ import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
+import client.client;
 
 @SuppressWarnings("serial")
 public class LSApp extends JFrame {
 
 	private JPanel contentPane;
+	private String username;			// Lawer's username
 	private DefaultTableModel model;	// Table model for Appointments List
 	private JTable tableApp;			// Table for Appointments List
 	private JButton btnOpen;			// Open an appointment Button
@@ -56,13 +58,14 @@ public class LSApp extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public LSApp() {
+	public LSApp(String user) {
 		setTitle("My Appointments");
 		setBounds(550, 100, 803, 690);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		this.username=user;
 
 		// App Logo
 		JLabel logo = new JLabel("");
@@ -366,9 +369,19 @@ public class LSApp extends JFrame {
 	}
 
 	public void insertApp() {
-		/* client.send("getApps", lawID) */
-		for (int i = 0; i < 20; i++)
-			model.addRow(new Object[] {i+1, "type"+i, (i+1)+"-Apr-14", "Yes", 100+i, "Yes"});
+		// Clear Table
+		while (model.getRowCount() != 0) model.removeRow(0);
+		
+		// Get appointments from database
+		String str = "SELECT DISTINCT A.AID, A.ATYPE, A.ADATE, A.SCHEDULED,M.CASEID,C.UPDATE_DATE "+
+					 "FROM dbo.APPOINTMENT A, dbo.MEETING M, dbo.CASES C "+
+					 "WHERE M.LUSER='"+this.username+"' AND M.AID=A.AID AND M.CASEID=C.CASEID";
+		Object[][] rs = (Object[][]) client.send(str);
+		
+		// Insert appointments to table
+		for (int i=1;i<rs.length;i++){
+			model.addRow(new Object[] {rs[i][0], rs[i][1], rs[i][2], rs[i][3], rs[i][4], rs[i][5]});
+		}
 	}
 
 	private void openApp(){
