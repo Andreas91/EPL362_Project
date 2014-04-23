@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Andreas Andreou & Maria Christodoulou
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package client;
 
 import java.awt.EventQueue;
@@ -15,6 +31,12 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * The Login class gives access to a user's viewpoint according
+ * to their credentials.
+ * @author Andreas Andreou & Maria Christodoulou
+ * @version 1.0
+ */
 @SuppressWarnings({"serial", "deprecation"})
 public class Login extends JFrame {
 
@@ -67,21 +89,26 @@ public class Login extends JFrame {
 					JOptionPane.showMessageDialog(null,
 							"Password field is empty!");
 				else {
-					int role = verifyUser();
-					switch (role) {
-						case 0: // receptionist
-							break;
-						case 1:
-							legalStaff.LSMenu ls = new legalStaff.LSMenu(); // Create Legal Staff window
-							ls.setVisible(true); // Show Legal Staff window
-							setVisible(false); // Hide Login window
-							break;
-						case 2: // LegalRecordsStuff
-							break;
-						case 3: // Management
-							break;
-						default:
-							JOptionPane.showMessageDialog(null,"Unable to login, please verify username/password.");
+					String[] info = new String[2]; // [0]=username, [1]=role
+					boolean isUser = verifyUser(info);
+					if (!isUser) JOptionPane.showMessageDialog(null,"Unable to communicate with DB");
+					else{
+						int role = Integer.valueOf(info[1]);
+						switch (role) {
+							case 0: // receptionist
+									break;
+							case 1:
+									legalStaff.LSMenu ls = new legalStaff.LSMenu(info[0]); // Create Legal Staff window
+									ls.setVisible(true); // Show Legal Staff window
+									setVisible(false); // Hide Login window
+									break;
+							case 2: // LegalRecordsStuff
+									break;
+							case 3: // Management
+									break;
+							default:
+									JOptionPane.showMessageDialog(null,"Unable to login, please verify username/password.");
+						}
 					}
 				}
 			}
@@ -128,17 +155,26 @@ public class Login extends JFrame {
 
 	}
 	
-	private int verifyUser(){
+	/**
+	 * Method for verifying a user. It fills the given table with
+	 * the user's username and role and returns if the communication
+	 * with the database was successful.
+	 * @param table user's info: [0]=username, [1]=role.
+	 * @return successful communication with DB
+	 */
+	private boolean verifyUser(String[] table){
 		String user = inUsername.getText();
 		String pass = inPassword.getText();
 		Object o = "SELECT * FROM dbo.USERS WHERE USERNAME = '"+user+"' AND PASSWORD = '"+pass+"'";
 		Object[][] rs = (Object[][]) client.send(o);
-		if (rs==null) return -1;
+		if (rs==null) return false;
 		try{
-			String role = rs[1][2].toString();
-			return Integer.valueOf(role);
+			table[0]=rs[1][0].toString(); // fill username
+			table[1]=rs[1][2].toString(); // fill role
 		}catch(ArrayIndexOutOfBoundsException e){
-			return -1;
+			table[0]="N/A"; // fill username
+			table[1]="-1"; // fill role
 		}
+		return true;
 	}
 }
