@@ -50,9 +50,7 @@ public class LSMenu extends JFrame {
 		setTitle("Menu: "+user);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 331);
-		this.username=user;
-		lsa = new LSApp(this.username);
-		lsc = new LSClients(this.username);
+		this.username=user;	
 		
 		// Menu Bar
 		JMenuBar menuBar = new JMenuBar();
@@ -67,7 +65,8 @@ public class LSMenu extends JFrame {
 		JMenuItem mntmLogout = new JMenuItem("Logout");
 		mntmLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (lsa.isVisible()) lsa.kill();
+				if (lsa!=null && lsa.isVisible()) lsa.kill();
+				if (lsc!=null && lsc.isVisible()) lsc.kill();
 				client.Login login = new client.Login();
 				login.setVisible(true);
 				dispose();
@@ -96,8 +95,9 @@ public class LSMenu extends JFrame {
 		JButton btnApp = new JButton("My Appointments");
 		btnApp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (!lsa.isVisible())
-					lsa.setVisible(true);
+				if (lsa!=null && lsa.isVisible()) lsa.kill();
+				lsa = new LSApp(username);
+				lsa.setVisible(true);
 			}
 		});
 		btnApp.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -108,8 +108,9 @@ public class LSMenu extends JFrame {
 		JButton btnClients = new JButton("My Clients");
 		btnClients.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!lsc.isVisible())
-					lsc.setVisible(true);
+				if (lsc!=null && lsc.isVisible()) lsc.kill();
+				lsc = new LSClients(username);
+				lsc.setVisible(true);
 			}
 		});
 		btnClients.setFont(new Font("Tahoma", Font.PLAIN, 16));

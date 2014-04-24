@@ -324,7 +324,7 @@ public class LSClients extends JFrame {
 				Object o = model.getValueAt(table.getSelectedRow(),0);
 				int cid = (int) o;
 				if (cases!=null && cases.isVisible()) cases.dispose();
-				cases = new LSCases(cid);
+				cases = new LSCases(cid,username);
 				cases.setVisible(true);
 			}
 		});

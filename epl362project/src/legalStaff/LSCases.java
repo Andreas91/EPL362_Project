@@ -46,6 +46,7 @@ public class LSCases extends JFrame {
 
 	private JPanel contentPane;
 	private int ClientID;				// Client's id
+	private String username;			// Lawyer's username
 	private DefaultTableModel model;	// Table model for Cases List
 	private JTable table;				// Table for Cases List
 	private JButton btnOpen;			// Open a case button
@@ -73,7 +74,7 @@ public class LSCases extends JFrame {
 	 * for the given client's cases.
 	 * @param cid client's id
 	 */
-	public LSCases(int cid) {
+	public LSCases(int cid, String user) {
 		setTitle("Cases");
 		setBounds(550, 100, 803, 667);
 		contentPane = new JPanel();
@@ -81,7 +82,8 @@ public class LSCases extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		this.ClientID=cid;
-
+		this.username=user;
+		
 		// App Logo
 		JLabel logo = new JLabel("");
 		logo.setIcon(new ImageIcon("LogoSmall.png"));
@@ -252,17 +254,17 @@ public class LSCases extends JFrame {
 		
 		// Clear Table
 		while (model.getRowCount() != 0) model.removeRow(0);
-		/*
+		
 		// Get cases from database
-		String str = "";
+		String str = "SELECT C.* "+
+					 "FROM dbo.MEETING M, dbo.CASES C "+
+					 "WHERE M.CID='"+this.ClientID+"' AND M.LUSER='"+this.username+"' AND M.CASEID=C.CASEID";
 		Object[][] rs = (Object[][]) client.send(str);
 		
 		// Insert cases to table
 		for (int i=1;i<rs.length;i++){
-			model.addRow(new Object[] {rs[i][0], rs[i][1], rs[i][2], rs[i][3]});
+			model.addRow(new Object[] {rs[i][0], rs[i][3], rs[i][1], rs[i][2]});
 		}
-		*/
-		model.addRow(new Object[] {1, "type", "Description", "2014-4-24 21:00:00"});
 	}
 	
 	/**
@@ -326,7 +328,9 @@ public class LSCases extends JFrame {
 	private void saveCase() {
 		String text = this.Desc.getText();
 		
-		String str = "";
+		String str = "UPDATE dbo.CASES "+
+				 	 "SET DESCRIPTION='"+text+"' "+
+				 	 "WHERE CASEID='"+this.Case_ID+"'";
 		
 		if (!(boolean)client.send(str)){
 			JOptionPane.showMessageDialog(null, "Unable to save changes!");
