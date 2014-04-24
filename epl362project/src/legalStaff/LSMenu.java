@@ -38,6 +38,7 @@ public class LSMenu extends JFrame {
 
 	private JPanel contentPane;
 	private LSApp lsa;				// Appointments viewpoint
+	private LSClients lsc;			// Clients viewpoint
 	private String username = null;	// Lawyers username
 
 	/**
@@ -51,6 +52,7 @@ public class LSMenu extends JFrame {
 		setBounds(100, 100, 450, 331);
 		this.username=user;
 		lsa = new LSApp(this.username);
+		lsc = new LSClients(this.username);
 		
 		// Menu Bar
 		JMenuBar menuBar = new JMenuBar();
@@ -85,9 +87,9 @@ public class LSMenu extends JFrame {
 		contentPane.add(logo);
 		
 		// Title
-		JLabel lblNewLabel = new JLabel("Legan Staff's Menu");
+		JLabel lblNewLabel = new JLabel("Legal Staff's Menu");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblNewLabel.setBounds(110, 21, 317, 55);
+		lblNewLabel.setBounds(110, 21, 219, 55);
 		contentPane.add(lblNewLabel);
 		
 		// Appointments Page Button
@@ -104,6 +106,12 @@ public class LSMenu extends JFrame {
 		
 		// Clients Page Button
 		JButton btnClients = new JButton("My Clients");
+		btnClients.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!lsc.isVisible())
+					lsc.setVisible(true);
+			}
+		});
 		btnClients.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnClients.setBounds(110, 166, 180, 42);
 		contentPane.add(btnClients);
