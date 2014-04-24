@@ -37,7 +37,9 @@ import client.client;
 import javax.swing.JTextArea;
 
 /**
- * 
+ * The Cases class, gives the lawyer access to all cases of a 
+ * selected client. The lawyer can see a the description of the
+ * case and add changes.
  * @author Andreas Andreou
  * @version 1.0
  */
@@ -66,8 +68,6 @@ public class LSCases extends JFrame {
 	
 	private LSOpinions lso;				// Legal Opinions for a case
 	private LSRecom lsr;				// Legal Recommendations for a case
-	
-	
 
 	/**
 	 * Class constructor. It creates the frame

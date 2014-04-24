@@ -35,7 +35,9 @@ import java.awt.event.ActionEvent;
 import client.client;
 
 /**
- * 
+ * The Clients class, gives the lawyer access to his clients records
+ * and their comments and cases. Through the interface, the lawyer can
+ * search any of his clients (and his clients only) by their id.
  * @author Andreas Andreou
  * @version 1.0
  */
@@ -43,7 +45,7 @@ import client.client;
 public class LSClients extends JFrame {
 
 	private JPanel contentPane;
-	private String username;			// Lawer's username
+	private String username;			// Lawyer's username
 	private JTextField Search;			// Search input
 	private JButton btnSearch;			// Search button
 	private JButton btnReset;			// Reset Search butotn
