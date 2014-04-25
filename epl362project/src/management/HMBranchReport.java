@@ -1,6 +1,5 @@
 package management;
 
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+@SuppressWarnings("serial")
 public class HMBranchReport extends JFrame {
 
 	private JPanel contentPane;
@@ -34,22 +34,6 @@ public class HMBranchReport extends JFrame {
 	private JTextField txtOpinionsTotal;
 	private JTextField txtCaseClients;
 	private JTextField txtRecomCount;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					HMBranchReport frame = new HMBranchReport();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
