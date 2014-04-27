@@ -1,6 +1,5 @@
 package receptionist;
 
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,7 +37,7 @@ public class RSearchClient extends JFrame {
 	public RSearchClient() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 627, 430);
+		setBounds(100, 100, 785, 430);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -49,7 +48,7 @@ public class RSearchClient extends JFrame {
 		label.setBounds(239, 36, 209, 25);
 		contentPane.add(label);
 
-		String[] col = { "A/a", "Branch ID", "Date/Time" };
+		String[] col = { "Client","A/a", "Branch ID", "Case ID", "Date/Time" };
 		Object[][] data = {};
 		model = new DefaultTableModel(data, col);
 		
@@ -67,7 +66,7 @@ public class RSearchClient extends JFrame {
 		contentPane.add(logo);
 		
 		JSeparator separator = new JSeparator();
-		separator.setBounds(0, 95, 621, 2);
+		separator.setBounds(0, 95, 779, 2);
 		contentPane.add(separator);
 		
 		JLabel label_1 = new JLabel("Search Using Surname:");
@@ -87,26 +86,26 @@ public class RSearchClient extends JFrame {
 		
 		JLabel label_2 = new JLabel("Search Using ID:");
 		label_2.setFont(new Font("Tahoma", Font.BOLD, 15));
-		label_2.setBounds(398, 108, 171, 19);
+		label_2.setBounds(458, 108, 171, 19);
 		contentPane.add(label_2);
 		
 		txtSearchID = new JTextField();
 		txtSearchID.setColumns(10);
-		txtSearchID.setBounds(398, 138, 171, 20);
+		txtSearchID.setBounds(458, 138, 171, 20);
 		contentPane.add(txtSearchID);
 		
 		JButton btnSearchID = new JButton("Search");
 		btnSearchID.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		btnSearchID.setBounds(398, 169, 171, 23);
+		btnSearchID.setBounds(458, 169, 171, 23);
 		contentPane.add(btnSearchID);
 		
 		JSeparator separator_1 = new JSeparator();
-		separator_1.setBounds(0, 211, 621, 2);
+		separator_1.setBounds(0, 211, 779, 2);
 		contentPane.add(separator_1);
 		
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setOrientation(SwingConstants.VERTICAL);
-		separator_2.setBounds(285, 93, 1, 120);
+		separator_2.setBounds(319, 93, 1, 120);
 		contentPane.add(separator_2);
 		
 		JLabel label_3 = new JLabel("Client's Info:");
@@ -170,20 +169,50 @@ public class RSearchClient extends JFrame {
 		contentPane.add(label_8);
 		
 		JScrollPane scrollPane = new JScrollPane(tableApp);
-		scrollPane.setBounds(263, 249, 306, 87);
+		scrollPane.setBounds(263, 249, 506, 87);
 		contentPane.add(scrollPane);
 		
 		JLabel label_9 = new JLabel("Mark As:");
 		label_9.setFont(new Font("Tahoma", Font.BOLD, 13));
 		label_9.setBounds(260, 356, 71, 20);
 		contentPane.add(label_9);
-		
+				
 		JButton btnAttend = new JButton("Attended");
+		btnAttend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(tableApp.getSelectedRowCount() < 1)
+					JOptionPane.showMessageDialog(null,"Select an appointment first!");
+				else{
+					for(int i=0;i<tableApp.getSelectedRowCount();i++){
+						String str = "UPDATE dbo.MEETING SET ATTENDED = 1 WHERE AID="+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
+						if((boolean)client.client.send(str))
+							JOptionPane.showMessageDialog(null,"Appointments marked as attended!");
+						else
+							JOptionPane.showMessageDialog(null,"Problem communicating with DB");
+					}
+				}
+			}
+		});
 		btnAttend.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnAttend.setBounds(341, 355, 107, 23);
 		contentPane.add(btnAttend);
 		
 		JButton btnMiss = new JButton("Not Attended");
+		btnMiss.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(tableApp.getSelectedRowCount() < 1)
+					JOptionPane.showMessageDialog(null,"Select an appointment first!");
+				else{
+					for(int i=0;i<tableApp.getSelectedRowCount();i++){
+						String str = "UPDATE dbo.MEETING SET ATTENDED = 0 WHERE AID="+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
+						if((boolean)client.client.send(str))
+							JOptionPane.showMessageDialog(null,"Appointments marked as attended!");
+						else
+							JOptionPane.showMessageDialog(null,"Problem communicating with DB");
+					}
+				}
+			}
+		});
 		btnMiss.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnMiss.setBounds(458, 355, 119, 23);
 		contentPane.add(btnMiss);
@@ -207,12 +236,12 @@ public class RSearchClient extends JFrame {
 						txtName.setText((String) rs[1][1]);
 						txtSurname.setText((String) rs[1][2]);
 						chbFlag.setSelected((boolean) rs[1][3]);
-						String str2 = "SELECT DISTINCT A.AID,BID,ADATE FROM dbo.APPOINTMENT A JOIN dbo.MEETING M ON A.AID=M.AID WHERE M.CID="+(int)rs[1][0];
+						String str2 = "SELECT DISTINCT CID,A.AID,BID,CASEID,ADATE FROM dbo.APPOINTMENT A JOIN dbo.MEETING M ON A.AID=M.AID WHERE M.CID="+(int)rs[1][0];
 						Object[][] rs2 = (Object[][]) client.client.send(str2);
 						while (model.getRowCount() != 0) model.removeRow(0);
 						if(rs2.length>=2){
 							for (int i=1;i<rs.length;i++){
-								model.addRow(new Object[] {rs2[i][0], rs2[i][1], rs2[i][2]});
+								model.addRow(new Object[] {rs2[i][0], rs2[i][1], rs2[i][2], rs2[i][3], rs2[i][4]});
 							}
 						}
 					}
@@ -238,6 +267,14 @@ public class RSearchClient extends JFrame {
 						txtName.setText((String) rs[1][1]);
 						txtSurname.setText((String) rs[1][2]);
 						chbFlag.setSelected((boolean) rs[1][3]);
+						String str2 = "SELECT DISTINCT CID,A.AID,BID,CASEID,ADATE FROM dbo.APPOINTMENT A JOIN dbo.MEETING M ON A.AID=M.AID WHERE M.CID="+(int)rs[1][0];
+						Object[][] rs2 = (Object[][]) client.client.send(str2);
+						while (model.getRowCount() != 0) model.removeRow(0);
+						if(rs2.length>=2){
+							for (int i=1;i<rs.length;i++){
+								model.addRow(new Object[] {rs2[i][0], rs2[i][1], rs2[i][2], rs2[i][3], rs2[i][4]});
+							}
+						}
 					}
 				}
 			}
