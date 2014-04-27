@@ -56,7 +56,7 @@ public class server implements Serializable{
 			cSock = sock.accept();
 		} catch (IOException e) {
 			System.err.println("Unable to create server socket:");
-			System.err.println(e.getStackTrace());
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -69,14 +69,14 @@ public class server implements Serializable{
 				sock.close();
 			} catch (IOException e) {
 				System.err.println("Unable to close socket:");
-				System.err.println(e.getStackTrace());
+				e.printStackTrace();
 			}
 		if (!cSock.isClosed())
 			try {
 				cSock.close();
 			} catch (IOException e) {
 				System.err.println("Unable to close socket:");
-				System.err.println(e.getStackTrace());
+				e.printStackTrace();
 			}
 	}
 	

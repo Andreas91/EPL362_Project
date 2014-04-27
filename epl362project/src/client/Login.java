@@ -95,7 +95,10 @@ public class Login extends JFrame {
 					else{
 						int role = Integer.valueOf(info[1]);
 						switch (role) {
-							case 0: // receptionist
+							case 0: 
+									receptionist.RMenu rc = new receptionist.RMenu(info[0]);
+									rc.setVisible(true);
+									setVisible(false);
 									break;
 							case 1:
 									legalStaff.LSMenu ls = new legalStaff.LSMenu(info[0]); // Create Legal Staff window
@@ -104,7 +107,10 @@ public class Login extends JFrame {
 									break;
 							case 2: // LegalRecordsStuff
 									break;
-							case 3: // Management
+							case 3: 
+									management.HMBranchWeekly mg = new management.HMBranchWeekly(info[0]);
+									mg.setVisible(true);
+									setVisible(false);
 									break;
 							default:
 									JOptionPane.showMessageDialog(null,"Unable to login, please verify username/password.");

@@ -24,25 +24,9 @@ public class HMBranchWeekly extends JFrame {
 	private JFrame br = new HMBranchReport();
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					HMBranchWeekly frame = new HMBranchWeekly();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
-	public HMBranchWeekly() {
+	public HMBranchWeekly(String user) {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 304, 113);

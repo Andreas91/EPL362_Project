@@ -12,11 +12,11 @@ public class client {
 			sock = new Socket("localhost", 6789);
 		} catch (UnknownHostException e) {
 			System.err.println("Unable to resolve host:");
-			System.err.println(e.getStackTrace());
+			e.printStackTrace();
 			return false;
 		} catch (IOException e) {
 			System.err.println("Unable to create socket:");
-			System.err.println(e.getStackTrace());
+			e.printStackTrace();
 			return false;
 		}
 		return true;
