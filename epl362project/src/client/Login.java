@@ -105,7 +105,9 @@ public class Login extends JFrame {
 									ls.setVisible(true); // Show Legal Staff window
 									setVisible(false); // Hide Login window
 									break;
-							case 2: // LegalRecordsStuff
+							case 2: recordsStaff.LRSMenu lrs = new recordsStaff.LRSMenu(info[0]);
+									lrs.setVisible(true);
+									setVisible(false);
 									break;
 							case 3: 
 									management.HMBranchWeekly mg = new management.HMBranchWeekly(info[0]);
