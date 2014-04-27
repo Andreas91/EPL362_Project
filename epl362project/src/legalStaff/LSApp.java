@@ -394,11 +394,13 @@ public class LSApp extends JFrame {
 		btnRec.setEnabled(false);
 		btnRec.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (tableApp.getSelectedRowCount() != 1) {
-					JOptionPane.showMessageDialog(null,"Select an appointment first!");
+				if (tableClients.getSelectedRowCount() != 1) {
+					JOptionPane.showMessageDialog(null,"Select a client first!");
 				} else {
+					Object o = modelC.getValueAt(tableClients.getSelectedRow(),0);
+					int cid = (int) o;
 					if (lsr!=null && lsr.isVisible()) lsr.dispose();
-					lsr = new LSRecom(Case_ID);
+					lsr = new LSRecom(Case_ID, cid, username);
 					lsr.setVisible(true);
 				}
 			}

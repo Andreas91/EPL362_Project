@@ -235,7 +235,7 @@ public class LSCases extends JFrame {
 		btnRec.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (lsr!=null && lsr.isVisible()) lsr.dispose();
-				lsr = new LSRecom(Case_ID);
+				lsr = new LSRecom(Case_ID, ClientID, username);
 				lsr.setVisible(true);
 			}
 		});

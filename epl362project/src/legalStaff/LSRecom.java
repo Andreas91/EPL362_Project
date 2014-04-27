@@ -61,13 +61,14 @@ public class LSRecom extends JFrame {
 	private JButton btnEffects;			// Show effect for legal recommendation
 	private JTextArea inDesc;			// Description area
 	private int caseID;					// Given case id
-
+	private int clientID;				// Given client's id
+	private String username;			// Lawyers username
 	/**
 	 * Class constructor. It creates the frame and gives
 	 * some functionality to the buttons.
 	 * @param caseid given case id.
 	 */
-	public LSRecom(int caseid) {
+	public LSRecom(int caseid, int cid, String user) {
 		setTitle("Case: " + caseid);
 		setBounds(100, 100, 494, 595);
 		contentPane = new JPanel();
@@ -75,6 +76,8 @@ public class LSRecom extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		this.caseID=caseid;
+		this.clientID=cid;
+		this.username=user;
 		
 		// Legal Recommendations Title
 		JLabel label = new JLabel("Legal Recom.:");
@@ -149,7 +152,20 @@ public class LSRecom extends JFrame {
 				if (inDesc.getText().length()==0){
 					JOptionPane.showMessageDialog(null,"You haven't enter a description");
 				}else{
-					addNew();
+					String acc = checkAcceptance();
+					if (acc==null){
+						addNew();
+					}
+					else{
+						String msg = "WARNING!!!\nThis client (ID: "+clientID+") is known"
+							+ " to delcine the recommendation "+(cbbRec.getSelectedIndex()+1)+
+							" "+acc+". Do you want to proceed?";
+						int option = JOptionPane.showConfirmDialog(null, msg);
+						if (option==0){
+							addNew();
+						}
+						addWarning(msg,option);
+					}
 					btnCancel.doClick();
 				}
 			}
@@ -241,7 +257,7 @@ public class LSRecom extends JFrame {
 		Object[][] rs = (Object[][]) client.send("SELECT * FROM dbo.DISPUTE D WHERE D.CASEID='"+this.caseID+"'");
 		String accept = null;
 		for (int i=1;i<rs.length;i++){
-			if (rs[i][4].toString().equals("0")) accept="No";
+			if (!(boolean)rs[i][4]) accept="No";
 			else accept="Yes";
 			model.addRow(new Object[] {rs[i][0], rs[i][2], rs[i][3], accept});
 		}
@@ -278,6 +294,44 @@ public class LSRecom extends JFrame {
 			if (this.chAccepted.isSelected()) a ="Yes";
 			model.addRow(new Object[] {LRID, today, this.inDesc.getText(), a});
 			JOptionPane.showMessageDialog(null, "One record added successfully!");
+		}
+	}
+	
+	/**
+	 * Checks if the client accepts the selected recommendation.
+	 * @return acceptance of selected recommendation.
+	 */
+	private String checkAcceptance(){
+		int recid = this.cbbRec.getSelectedIndex()+1;
+		String str = "SELECT ACCEPTED "+
+					 "FROM dbo.MEETING M JOIN dbo.CASES C ON M.CASEID = C.CASEID "+
+					 "JOIN dbo.DISPUTE D ON C.CASEID = D.CASEID "+
+					 "WHERE LRID = "+recid+" AND CID = "+this.clientID;
+		Object[][] rs = (Object[][]) client.send(str);
+		
+		if (rs.length==1) return null;
+		
+		int total = rs.length-1;
+		int decline = 0;
+		
+		for (int i=1;i<rs.length;i++){
+			if ((boolean)rs[i][0]==false) decline++;
+		}
+		
+		if (decline>=total/2) return decline+"/"+total;
+		return null;
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void addWarning(String msg, int option){
+		Date d = new Date();
+		String today = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "
+						+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		String str = "INSERT INTO dbo.WARNINGS(USERNAME,STATUS,WDATE,DETAILS) VALUES "
+				+ "('"+this.username+"','"+option+"','"+today+"', '"+msg+"')";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to insert warning to DB!");
 		}
 	}
 }

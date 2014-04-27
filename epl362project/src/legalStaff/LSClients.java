@@ -48,11 +48,13 @@ public class LSClients extends JFrame {
 	private String username;			// Lawyer's username
 	private JTextField Search;			// Search input
 	private JButton btnSearch;			// Search button
-	private JButton btnReset;			// Reset Search butotn
+	private JButton btnReset;			// Reset Search button
 	private DefaultTableModel model;	// Table model for clients list
 	private JTable table;				// Table for clients list
 	private JButton btnOpen;			// Open a client record button
 	private JButton btnClose;			// Close a client record button
+	private JButton btnDeac;			// Deactivate a client button
+	private JButton btnActivate;		// Activate a client button
 	
 	private JTextField CID;				// Client's ID
 	private JTextField CName;			// Client's Name
@@ -65,10 +67,11 @@ public class LSClients extends JFrame {
 	private Comments comm;				// Comment window for a client
 	private LSCases cases;				// Cases window for a client
 	private JButton btnCases;			// Client's cases button
-
+	
 	private boolean tFlag;				// Temporary stores Client's Flag if edit is cancel
 	private String tName;				// Temporary stores Client's Name if edit is cancel
 	private String tSurname;			// Temporary stores Client's Surname if edit is cancel
+	
 	
 	/**
 	 * Class constructor. It creates the frame
@@ -190,6 +193,42 @@ public class LSClients extends JFrame {
 		btnClose.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnClose.setBounds(130, 311, 97, 25);
 		contentPane.add(btnClose);
+		
+		// Deactivate Selected Client
+		btnDeac = new JButton("Deactivate");
+		btnDeac.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (table.getSelectedRowCount() != 1) {
+					JOptionPane.showMessageDialog(null,"Select a client first!");
+				} else {
+					int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to deactivate this client?");
+					if (option==0){
+						deactivateClient();
+					}
+				}
+			}
+		});
+		btnDeac.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnDeac.setBounds(238, 311, 112, 25);
+		contentPane.add(btnDeac);
+		
+		// Activate Selected Client
+		btnActivate = new JButton("Activate");
+		btnActivate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (table.getSelectedRowCount() != 1) {
+					JOptionPane.showMessageDialog(null,"Select a client first!");
+				} else {
+					int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to activate this client?");
+					if (option==0){
+						activateClient();
+					}
+				}
+			}
+		});
+		btnActivate.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnActivate.setBounds(362, 311, 112, 25);
+		contentPane.add(btnActivate);
 
 		// Line Separator
 		JSeparator separator_1 = new JSeparator();
@@ -260,7 +299,7 @@ public class LSClients extends JFrame {
 		CSurname.setBounds(285, 438, 183, 22);
 		contentPane.add(CSurname);
 
-		// Client Edit/Cancel Button
+		// Client Edit Button
 		btnCEdit = new JButton("Edit");
 		btnCEdit.setEnabled(false);
 		btnCEdit.addActionListener(new ActionListener() {
@@ -335,7 +374,7 @@ public class LSClients extends JFrame {
 		btnCases.setBounds(138, 487, 91, 25);
 		contentPane.add(btnCases);
 		
-		// Fill Table with appointments
+		// Fill Table with clients
 		insertClients();
 	}
 	
@@ -386,8 +425,12 @@ public class LSClients extends JFrame {
 		
 		// Set access to clients controls
 		this.table.setEnabled(false);
+		this.btnSearch.setEnabled(false);
+		this.btnReset.setEnabled(false);
 		this.btnOpen.setEnabled(false);
 		this.btnClose.setEnabled(true);
+		this.btnDeac.setEnabled(false);
+		this.btnActivate.setEnabled(false);
 		this.btnCEdit.setEnabled(true);
 		this.btnCSave.setEnabled(false);
 		this.btnCCancel.setEnabled(false);
@@ -419,8 +462,12 @@ public class LSClients extends JFrame {
 
 		// Set access to clients controls
 		this.table.setEnabled(true);
+		this.btnSearch.setEnabled(true);
+		this.btnReset.setEnabled(true);
 		this.btnOpen.setEnabled(true);
 		this.btnClose.setEnabled(false);
+		this.btnDeac.setEnabled(true);
+		this.btnActivate.setEnabled(true);
 		this.btnCEdit.setEnabled(false);
 		this.btnCSave.setEnabled(false);
 		this.btnCCancel.setEnabled(false);
@@ -476,6 +523,44 @@ public class LSClients extends JFrame {
 			model.setValueAt(sSurname, table.getSelectedRow(), 2);
 			model.setValueAt(bFlag, table.getSelectedRow(), 3);
 			JOptionPane.showMessageDialog(null, "Changes were saved!");
+		}
+	}
+	
+	/**
+	 * Deactivates(=read only) a selected client.
+	 */
+	private void deactivateClient(){
+		int row = table.getSelectedRow();
+		int cid = (int) model.getValueAt(row, 0);
+		String str = "UPDATE dbo.CLIENT "+
+					 "SET DELETED='true' "+
+					 "WHERE CID='"+cid+"';";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to deactivate client!");
+		}
+		else{
+			model.setValueAt(true, row, 4);
+			JOptionPane.showMessageDialog(null, "Client deactivated!");
+		}
+	}
+	
+	/**
+	 * Activates a selected client.
+	 */
+	private void activateClient(){
+		int row = table.getSelectedRow();
+		int cid = (int) model.getValueAt(row, 0);
+		String str = "UPDATE dbo.CLIENT "+
+					 "SET DELETED='false' "+
+					 "WHERE CID='"+cid+"';";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to activate client!");
+		}
+		else{
+			model.setValueAt(false, row, 4);
+			JOptionPane.showMessageDialog(null, "Client activated!");
 		}
 	}
 

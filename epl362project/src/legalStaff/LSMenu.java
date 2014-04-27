@@ -39,6 +39,7 @@ public class LSMenu extends JFrame {
 	private JPanel contentPane;
 	private LSApp lsa;				// Appointments viewpoint
 	private LSClients lsc;			// Clients viewpoint
+	private LSNewCase lsnc;			// New Case viewpoint
 	private String username = null;	// Lawyers username
 
 	/**
@@ -49,7 +50,7 @@ public class LSMenu extends JFrame {
 	public LSMenu(String user) {
 		setTitle("Menu: "+user);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 331);
+		setBounds(100, 100, 450, 362);
 		this.username=user;	
 		
 		// Menu Bar
@@ -67,6 +68,7 @@ public class LSMenu extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (lsa!=null && lsa.isVisible()) lsa.kill();
 				if (lsc!=null && lsc.isVisible()) lsc.kill();
+				if (lsnc!=null && lsnc.isVisible()) lsnc.dispose(); 
 				client.Login login = new client.Login();
 				login.setVisible(true);
 				dispose();
@@ -116,6 +118,19 @@ public class LSMenu extends JFrame {
 		btnClients.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnClients.setBounds(110, 166, 180, 42);
 		contentPane.add(btnClients);
+		
+		// New Case Button
+		JButton btnNewCase = new JButton("New Case");
+		btnNewCase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (lsnc!=null && lsnc.isVisible()) lsnc.dispose();
+				lsnc = new LSNewCase();
+				lsnc.setVisible(true);
+			}
+		});
+		btnNewCase.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		btnNewCase.setBounds(110, 224, 180, 42);
+		contentPane.add(btnNewCase);
 		
 	}
 }
