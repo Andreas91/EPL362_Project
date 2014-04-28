@@ -24,7 +24,6 @@ public class RMenu extends JFrame {
 	 * Create the frame.
 	 */
 	public RMenu(String user) {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 442, 314);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
