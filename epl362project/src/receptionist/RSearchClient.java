@@ -35,8 +35,8 @@ public class RSearchClient extends JFrame {
 	 * Create the frame.
 	 */
 	public RSearchClient() {
+		setTitle("Search Client");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 785, 430);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -206,7 +206,7 @@ public class RSearchClient extends JFrame {
 					for(int i=0;i<tableApp.getSelectedRowCount();i++){
 						String str = "UPDATE dbo.MEETING SET ATTENDED = 0 WHERE AID="+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
 						if((boolean)client.client.send(str))
-							JOptionPane.showMessageDialog(null,"Appointments marked as attended!");
+							JOptionPane.showMessageDialog(null,"Appointments marked as missed!");
 						else
 							JOptionPane.showMessageDialog(null,"Problem communicating with DB");
 					}
@@ -240,7 +240,7 @@ public class RSearchClient extends JFrame {
 						Object[][] rs2 = (Object[][]) client.client.send(str2);
 						while (model.getRowCount() != 0) model.removeRow(0);
 						if(rs2.length>=2){
-							for (int i=1;i<rs.length;i++){
+							for (int i=1;i<rs2.length;i++){
 								model.addRow(new Object[] {rs2[i][0], rs2[i][1], rs2[i][2], rs2[i][3], rs2[i][4]});
 							}
 						}
@@ -271,7 +271,7 @@ public class RSearchClient extends JFrame {
 						Object[][] rs2 = (Object[][]) client.client.send(str2);
 						while (model.getRowCount() != 0) model.removeRow(0);
 						if(rs2.length>=2){
-							for (int i=1;i<rs.length;i++){
+							for (int i=1;i<rs2.length;i++){
 								model.addRow(new Object[] {rs2[i][0], rs2[i][1], rs2[i][2], rs2[i][3], rs2[i][4]});
 							}
 						}
