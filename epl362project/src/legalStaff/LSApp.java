@@ -115,7 +115,7 @@ public class LSApp extends JFrame {
 		contentPane.add(separator);
 
 		// Appointments Table
-		String[] col = { "A/a", "Type", "Date/Time", "Scheduled","CaseID", "Updated" };
+		String[] col = { "A/a", "Date/Time", "Scheduled","CaseID", "Updated" };
 		Object[][] data = {};
 		model = new DefaultTableModel(data, col);
 		tableApp = new JTable(model) {
@@ -139,7 +139,7 @@ public class LSApp extends JFrame {
 					JOptionPane.showMessageDialog(null,"Select an appointment first!");
 				} else {
 					openApp();
-					Object o = model.getValueAt(tableApp.getSelectedRow(), 4);
+					Object o = model.getValueAt(tableApp.getSelectedRow(), 3);
 					Case_ID=(int)o;
 					Object o2 = model.getValueAt(tableApp.getSelectedRow(), 0);
 					getApp((int)o2);
@@ -427,14 +427,14 @@ public class LSApp extends JFrame {
 		while (model.getRowCount() != 0) model.removeRow(0);
 		
 		// Get appointments from database
-		String str = "SELECT DISTINCT A.AID, A.ATYPE, A.ADATE, A.SCHEDULED,M.CASEID,C.UPDATE_DATE "+
+		String str = "SELECT DISTINCT A.AID, A.ADATE, A.SCHEDULED,M.CASEID,C.UPDATE_DATE "+
 					 "FROM dbo.APPOINTMENT A, dbo.MEETING M, dbo.CASES C "+
 					 "WHERE M.LUSER='"+this.username+"' AND M.AID=A.AID AND M.CASEID=C.CASEID";
 		Object[][] rs = (Object[][]) client.send(str);
 		
 		// Insert appointments to table
 		for (int i=1;i<rs.length;i++){
-			model.addRow(new Object[] {rs[i][0], rs[i][1], rs[i][2], rs[i][3], rs[i][4], rs[i][5]});
+			model.addRow(new Object[] {rs[i][0], rs[i][1], rs[i][2], rs[i][3], rs[i][4]});
 		}
 	}
 	
@@ -598,7 +598,7 @@ public class LSApp extends JFrame {
 			JOptionPane.showMessageDialog(null, "Unable to update!");
 		}
 		else{
-			model.setValueAt(today, tableApp.getSelectedRow(), 5);
+			model.setValueAt(today, tableApp.getSelectedRow(), 4);
 			saveTransaction("Update case: "+this.Case_ID);
 			JOptionPane.showMessageDialog(null, "Case is now updated!");
 		}
