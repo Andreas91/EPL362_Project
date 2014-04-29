@@ -293,6 +293,7 @@ public class LSRecom extends JFrame {
 			String a = "No";
 			if (this.chAccepted.isSelected()) a ="Yes";
 			model.addRow(new Object[] {LRID, today, this.inDesc.getText(), a});
+			saveTransaction("Added new recommendation for case: "+this.caseID);
 			JOptionPane.showMessageDialog(null, "One record added successfully!");
 		}
 	}
@@ -332,6 +333,23 @@ public class LSRecom extends JFrame {
 		
 		if (!(boolean)client.send(str)){
 			JOptionPane.showMessageDialog(null, "Unable to insert warning to DB!");
+		}
+	}
+	
+	/**
+	 * Saves the given command to systems history.
+	 * @param command sql query to be save.
+	 */
+	@SuppressWarnings("deprecation")
+	private void saveTransaction(String command){
+		Date d = new Date();
+		String today = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "
+				+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		String str = "INSERT INTO dbo.HISTORY (USERNAME,HDATE,COMMAND) VALUES "+
+					 "('"+username+"','"+today+"','"+command+"')";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to save transaction!");
 		}
 	}
 }

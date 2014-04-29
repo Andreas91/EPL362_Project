@@ -54,14 +54,15 @@ public class LSOpinions extends JFrame {
 	private JButton btnAdd;				// Add Legal Opinion Button
 	private String tOpinion;			// Temporary stores Opinion if new is cancel
 	private int caseID;					// Case ID to load the Legal Opinions for
-	private JButton btnDel;
+	private JButton btnDel;				// Delete opinion button
+	private String username;			// lawyer's username
 	
 	/**
 	 * Class constructor. It creates the frame and gives
 	 * some functionality to the buttons.
 	 * @param caseID given case id.
 	 */
-	public LSOpinions(int caseID) {
+	public LSOpinions(int caseID, String user) {
 		setTitle("Case: "+caseID);
 		setBounds(100, 100, 465, 478);
 		contentPane = new JPanel();
@@ -69,6 +70,7 @@ public class LSOpinions extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		this.caseID=caseID;
+		this.username=user;
 		
 		// Legal Opinion Title
 		JLabel label = new JLabel("Legal Opinion:");
@@ -225,7 +227,25 @@ public class LSOpinions extends JFrame {
 			JOptionPane.showMessageDialog(null, "Unable to insert in DB!");
 		}
 		else{
+			saveTransaction("Insert Legal Opinion for case: "+this.caseID);
 			JOptionPane.showMessageDialog(null, "One record added successfully!");
+		}
+	}
+	
+	/**
+	 * Saves the given command to systems history.
+	 * @param command sql query to be save.
+	 */
+	@SuppressWarnings("deprecation")
+	private void saveTransaction(String command){
+		Date d = new Date();
+		String today = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "
+				+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		String str = "INSERT INTO dbo.HISTORY (USERNAME,HDATE,COMMAND) VALUES "+
+					 "('"+username+"','"+today+"','"+command+"')";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to save transaction!");
 		}
 	}
 }

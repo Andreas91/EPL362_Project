@@ -232,6 +232,7 @@ public class Comments extends JFrame {
 		}
 		else{
 			insertCom(); // Refresh table
+			saveTransaction("Added comment for client: "+this.ClientID);
 			JOptionPane.showMessageDialog(null, "One record added successfully!");
 		}
 	}
@@ -251,7 +252,25 @@ public class Comments extends JFrame {
 		}
 		else{
 			model.removeRow(row);
+			saveTransaction("Deleted comment for client: "+this.ClientID);
 			JOptionPane.showMessageDialog(null, "One record deleted successfully!");
+		}
+	}
+	
+	/**
+	 * Saves the given command to systems history.
+	 * @param command sql query to be save.
+	 */
+	@SuppressWarnings("deprecation")
+	private void saveTransaction(String command){
+		Date d = new Date();
+		String today = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "
+				+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		String str = "INSERT INTO dbo.HISTORY (USERNAME,HDATE,COMMAND) VALUES "+
+					 "('"+username+"','"+today+"','"+command+"')";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to save transaction!");
 		}
 	}
 }

@@ -304,8 +304,14 @@ public class LSApp extends JFrame {
 		btnCSave = new JButton("Save");
 		btnCSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				saveClient(Integer.valueOf(CID.getText()));
-				editClient();
+				String n = CName.getText();
+				String s = CSurname.getText();
+				if (n.length()==0 || s.length()==0){
+					JOptionPane.showMessageDialog(null, "Please fill all fields!");
+				}else{
+					saveClient(Integer.valueOf(CID.getText()));
+					editClient();
+				}
 			}
 		});
 		btnCSave.setEnabled(false);
@@ -380,7 +386,7 @@ public class LSApp extends JFrame {
 					JOptionPane.showMessageDialog(null,"Select an appointment first!");
 				} else {
 					if (lso!=null && lso.isVisible()) lso.dispose();
-					lso = new LSOpinions(Case_ID);
+					lso = new LSOpinions(Case_ID, username);
 					lso.setVisible(true);
 				}
 			}
@@ -545,19 +551,34 @@ public class LSApp extends JFrame {
 		String sSurname = this.CSurname.getText();
 		boolean bFlag = this.CFlag.isSelected();
 		
-		String str = "UPDATE dbo.CLIENT "+
-					 "SET FLAG='"+bFlag+"', FNAME='"+sName+"', LNAME='"+sSurname+"' "+
-					 "WHERE CID='"+cid+"';";
+		// Change client's flag
+		if (bFlag!=this.tFlag){
+			String str = "UPDATE dbo.CLIENT "+
+					 	 "SET FLAG='"+bFlag+"' "+
+					 	 "WHERE CID='"+cid+"';";
 		
-		if (!(boolean)client.send(str)){
-			JOptionPane.showMessageDialog(null, "Unable to save changes!");
+			if (!(boolean)client.send(str)){
+				JOptionPane.showMessageDialog(null, "Unable to change flag!");
+			}
+			else{
+				modelC.setValueAt(bFlag, tableClients.getSelectedRow(), 3);
+				JOptionPane.showMessageDialog(null, "Client's flag has changed!");
+			}
 		}
-		else{
-			modelC.setValueAt(sName, tableClients.getSelectedRow(), 1);
-			modelC.setValueAt(sSurname, tableClients.getSelectedRow(), 2);
-			modelC.setValueAt(bFlag, tableClients.getSelectedRow(), 3);
-			JOptionPane.showMessageDialog(null, "Changes were saved!");
+		
+		// Send request for changing name/surname
+		if (!sName.equals(this.tName) || !sSurname.equals(this.tSurname)){
+			String str = "INSERT INTO dbo.REQUESTS (USERNAME,CID,NEW_NAME,NEW_SURNAME) "+
+						 "VALUES ('"+this.username+"','"+cid+"','"+sName+"','"+sSurname+"')";
+	
+			if (!(boolean)client.send(str)){
+				JOptionPane.showMessageDialog(null, "Unable to submit name/surname change request!");
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "Name/Surname change request submited!");
+			}
 		}
+		
 	}
 	
 	/**
@@ -578,6 +599,7 @@ public class LSApp extends JFrame {
 		}
 		else{
 			model.setValueAt(today, tableApp.getSelectedRow(), 5);
+			saveTransaction("Update case: "+this.Case_ID);
 			JOptionPane.showMessageDialog(null, "Case is now updated!");
 		}
 		
@@ -591,5 +613,22 @@ public class LSApp extends JFrame {
 		if (lsr!=null && lsr.isVisible()) lsr.dispose();
 		if (comm!= null && comm.isVisible()) comm.dispose();
 		dispose();
+	}
+	
+	/**
+	 * Saves the given command to systems history.
+	 * @param command sql query to be save.
+	 */
+	@SuppressWarnings("deprecation")
+	private void saveTransaction(String command){
+		Date d = new Date();
+		String today = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "
+				+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		String str = "INSERT INTO dbo.HISTORY (USERNAME,HDATE,COMMAND) VALUES "+
+					 "('"+username+"','"+today+"','"+command+"')";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to save transaction!");
+		}
 	}
 }

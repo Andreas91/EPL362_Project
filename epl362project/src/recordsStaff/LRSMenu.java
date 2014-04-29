@@ -39,8 +39,11 @@ public class LRSMenu extends JFrame {
 	private JPanel contentPane;
 	private String username = null;		// Staff's username
 	private LRSClients lrsc = null;		// Clients Page
+	private LRSNewClient lrsnc = null;	// New Client Page
 	private LRSAccounts lrsa = null;	// Accounts Page
-	private LRSNewAccount lrsn = null;	// New Account Page
+	private LRSNewAccount lrsna = null;	// New Account Page
+	private LRSRequests lrsr = null;	// Requests Page
+	private LRSHistory lrsh = null;		// History of Transactions Page
 
 	/**
 	 * Class constructor. It creates the frame
@@ -67,8 +70,11 @@ public class LRSMenu extends JFrame {
 		mntmLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (lrsc!=null && lrsc.isVisible()) lrsc.dispose();
+				if (lrsnc!=null && lrsnc.isVisible()) lrsnc.dispose();
 				if (lrsa!=null && lrsa.isVisible()) lrsa.dispose();
-				if (lrsn!=null && lrsn.isVisible()) lrsn.dispose();
+				if (lrsna!=null && lrsna.isVisible()) lrsna.dispose();
+				if (lrsr!=null && lrsr.isVisible()) lrsr.dispose(); 
+				if (lrsh!=null && lrsh.isVisible()) lrsh.dispose(); 
 				client.Login login = new client.Login();
 				login.setVisible(true);
 				dispose();
@@ -97,10 +103,13 @@ public class LRSMenu extends JFrame {
 		JButton btnReq = new JButton("Requests");
 		btnReq.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				if (lrsr!=null && lrsr.isVisible()) lrsr.dispose();
+				lrsr = new LRSRequests(username);
+				lrsr.setVisible(true);
 			}
 		});
 		btnReq.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		btnReq.setBounds(12, 99, 180, 42);
+		btnReq.setBounds(12, 236, 180, 42);
 		contentPane.add(btnReq);
 		
 		// Accounts Page Button
@@ -117,17 +126,17 @@ public class LRSMenu extends JFrame {
 		contentPane.add(btnAccounts);
 		
 		// New Account Page Button
-		JButton btnNew = new JButton("New Account");
-		btnNew.addActionListener(new ActionListener() {
+		JButton btnNewAccount = new JButton("New Account");
+		btnNewAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (lrsn!=null && lrsn.isVisible()) lrsn.dispose();
-				lrsn = new LRSNewAccount();
-				lrsn.setVisible(true);
+				if (lrsna!=null && lrsna.isVisible()) lrsna.dispose();
+				lrsna = new LRSNewAccount();
+				lrsna.setVisible(true);
 			}
 		});
-		btnNew.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		btnNew.setBounds(229, 166, 180, 42);
-		contentPane.add(btnNew);
+		btnNewAccount.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		btnNewAccount.setBounds(229, 166, 180, 42);
+		contentPane.add(btnNewAccount);
 		
 		// Clients Page Button
 		JButton btnClients = new JButton("Clients");
@@ -139,14 +148,34 @@ public class LRSMenu extends JFrame {
 			}
 		});
 		btnClients.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		btnClients.setBounds(229, 99, 180, 42);
+		btnClients.setBounds(12, 97, 180, 42);
 		contentPane.add(btnClients);
 		
 		// History Page Button
 		JButton btnHistory = new JButton("History");
+		btnHistory.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (lrsh!=null && lrsh.isVisible()) lrsh.dispose();
+				lrsh = new LRSHistory(username);
+				lrsh.setVisible(true);
+			}
+		});
 		btnHistory.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		btnHistory.setBounds(133, 236, 180, 42);
+		btnHistory.setBounds(229, 236, 180, 42);
 		contentPane.add(btnHistory);
+		
+		// New Client Button
+		JButton btnNewClient = new JButton("New Client");
+		btnNewClient.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (lrsnc!=null && lrsnc.isVisible()) lrsnc.dispose();
+				lrsnc = new LRSNewClient();
+				lrsnc.setVisible(true);
+			}
+		});
+		btnNewClient.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		btnNewClient.setBounds(229, 97, 180, 42);
+		contentPane.add(btnNewClient);
 		
 	}
 }

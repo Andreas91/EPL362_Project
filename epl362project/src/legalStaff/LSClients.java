@@ -318,8 +318,14 @@ public class LSClients extends JFrame {
 		btnCSave = new JButton("Save");
 		btnCSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				saveClient(Integer.valueOf(CID.getText()));
-				editClient();
+				String n = CName.getText();
+				String s = CSurname.getText();
+				if (n.length()==0 || s.length()==0){
+					JOptionPane.showMessageDialog(null, "Please fill all fields!");
+				}else{
+					saveClient(Integer.valueOf(CID.getText()));
+					editClient();
+				}
 			}
 		});
 		btnCSave.setEnabled(false);
@@ -511,19 +517,34 @@ public class LSClients extends JFrame {
 		String sSurname = this.CSurname.getText();
 		boolean bFlag = this.CFlag.isSelected();
 		
-		String str = "UPDATE dbo.CLIENT "+
-					 "SET FLAG='"+bFlag+"', FNAME='"+sName+"', LNAME='"+sSurname+"' "+
-					 "WHERE CID='"+cid+"';";
+		// Change client's flag
+		if (bFlag!=this.tFlag){
+			String str = "UPDATE dbo.CLIENT "+
+					 	 "SET FLAG='"+bFlag+"' "+
+					 	 "WHERE CID='"+cid+"';";
 		
-		if (!(boolean)client.send(str)){
-			JOptionPane.showMessageDialog(null, "Unable to save changes!");
+			if (!(boolean)client.send(str)){
+				JOptionPane.showMessageDialog(null, "Unable to change flag!");
+			}
+			else{
+				model.setValueAt(bFlag, table.getSelectedRow(), 3);
+				JOptionPane.showMessageDialog(null, "Client's flag has changed!");
+			}
 		}
-		else{
-			model.setValueAt(sName, table.getSelectedRow(), 1);
-			model.setValueAt(sSurname, table.getSelectedRow(), 2);
-			model.setValueAt(bFlag, table.getSelectedRow(), 3);
-			JOptionPane.showMessageDialog(null, "Changes were saved!");
+		
+		// Send request for changing name/surname
+		if (!sName.equals(this.tName) || !sSurname.equals(this.tSurname)){
+			String str = "INSERT INTO dbo.REQUESTS (USERNAME,CID,NEW_NAME,NEW_SURNAME) "+
+						 "VALUES ('"+this.username+"','"+cid+"','"+sName+"','"+sSurname+"')";
+	
+			if (!(boolean)client.send(str)){
+				JOptionPane.showMessageDialog(null, "Unable to submit name/surname change request!");
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "Name/Surname change request submited!");
+			}
 		}
+		
 	}
 	
 	/**

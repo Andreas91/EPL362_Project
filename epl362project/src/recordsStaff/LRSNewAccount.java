@@ -147,7 +147,6 @@ public class LRSNewAccount extends JFrame {
 				}
 				else{
 					createAccount();
-					dispose();
 				}
 			}
 		});

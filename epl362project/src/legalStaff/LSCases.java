@@ -221,7 +221,7 @@ public class LSCases extends JFrame {
 		btnOp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (lso!=null && lso.isVisible()) lso.dispose();
-				lso = new LSOpinions(Case_ID);
+				lso = new LSOpinions(Case_ID, username);
 				lso.setVisible(true);
 			}
 		});
@@ -337,6 +337,7 @@ public class LSCases extends JFrame {
 		}
 		else{
 			model.setValueAt(text, table.getSelectedRow(), 2);
+			saveTransaction("Update description of case: "+this.Case_ID);
 			JOptionPane.showMessageDialog(null, "Changes were saved!");
 		}
 	}
@@ -359,6 +360,7 @@ public class LSCases extends JFrame {
 		}
 		else{
 			model.setValueAt(today, table.getSelectedRow(), 3);
+			saveTransaction("Update case: "+this.Case_ID);
 			JOptionPane.showMessageDialog(null, "Case is now updated!");
 		}
 		
@@ -371,5 +373,22 @@ public class LSCases extends JFrame {
 		if (lso!=null && lso.isVisible()) lso.dispose();
 		if (lsr!=null && lsr.isVisible()) lsr.dispose();
 		dispose();
+	}
+	
+	/**
+	 * Saves the given command to systems history.
+	 * @param command sql query to be save.
+	 */
+	@SuppressWarnings("deprecation")
+	private void saveTransaction(String command){
+		Date d = new Date();
+		String today = (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "
+				+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		String str = "INSERT INTO dbo.HISTORY (USERNAME,HDATE,COMMAND) VALUES "+
+					 "('"+username+"','"+today+"','"+command+"')";
+		
+		if (!(boolean)client.send(str)){
+			JOptionPane.showMessageDialog(null, "Unable to save transaction!");
+		}
 	}
 }
