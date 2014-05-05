@@ -225,7 +225,7 @@ public class RSearchClient extends JFrame {
 							"Surname field is empty!");
 				else {
 					String str = "SELECT DISTINCT CID, FNAME, LNAME, FLAG FROM dbo.CLIENT WHERE LNAME = '"
-							+ lname + "' AND DELETED=0";
+							+ lname + "' AND DELETED = 0";
 					Object[][] rs = (Object[][]) client.client.send(str);
 					if (rs.length < 2)
 						JOptionPane
@@ -236,7 +236,7 @@ public class RSearchClient extends JFrame {
 						txtName.setText((String) rs[1][1]);
 						txtSurname.setText((String) rs[1][2]);
 						chbFlag.setSelected((boolean) rs[1][3]);
-						String str2 = "SELECT DISTINCT CID,A.AID,BID,CASEID,ADATE FROM dbo.APPOINTMENT A JOIN dbo.MEETING M ON A.AID=M.AID WHERE M.CID="+(int)rs[1][0];
+						String str2 = "SELECT DISTINCT CID,A.AID,BID,CASEID,ADATE FROM dbo.APPOINTMENT A JOIN dbo.MEETING M ON A.AID = M.AID WHERE M.CID = "+(int)rs[1][0];
 						Object[][] rs2 = (Object[][]) client.client.send(str2);
 						while (model.getRowCount() != 0) model.removeRow(0);
 						if(rs2.length>=2){
@@ -256,7 +256,7 @@ public class RSearchClient extends JFrame {
 					JOptionPane.showMessageDialog(null, "ID field is empty!");
 				else {
 					String str = "SELECT DISTINCT CID, FNAME, LNAME, FLAG FROM dbo.CLIENT WHERE CID = "
-							+ Integer.parseInt(id) + " AND DELETED=0";
+							+ Integer.parseInt(id) + " AND DELETED = 0";
 					Object[][] rs = (Object[][]) client.client.send(str);
 					if (rs.length < 2)
 						JOptionPane
@@ -267,7 +267,7 @@ public class RSearchClient extends JFrame {
 						txtName.setText((String) rs[1][1]);
 						txtSurname.setText((String) rs[1][2]);
 						chbFlag.setSelected((boolean) rs[1][3]);
-						String str2 = "SELECT DISTINCT CID,A.AID,BID,CASEID,ADATE FROM dbo.APPOINTMENT A JOIN dbo.MEETING M ON A.AID=M.AID WHERE M.CID="+(int)rs[1][0];
+						String str2 = "SELECT DISTINCT CID,A.AID,BID,CASEID,ADATE FROM dbo.APPOINTMENT A JOIN dbo.MEETING M ON A.AID = M.AID WHERE M.CID = "+(int)rs[1][0];
 						Object[][] rs2 = (Object[][]) client.client.send(str2);
 						while (model.getRowCount() != 0) model.removeRow(0);
 						if(rs2.length>=2){

@@ -42,8 +42,10 @@ public class RMenu extends JFrame {
 		JMenuItem menuItem = new JMenuItem("Logout");
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (app.isVisible()) app.dispose();
-				if (rsc.isVisible()) rsc.dispose();
+				if (app.isVisible())
+					app.dispose();
+				if (rsc.isVisible())
+					rsc.dispose();
 				client.Login login = new client.Login();
 				login.setVisible(true);
 				dispose();
@@ -65,8 +67,10 @@ public class RMenu extends JFrame {
 		JButton button = new JButton("Schedule Appointments");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (!app.isActive())
+				if (!app.isActive()) {
 					app.setVisible(true);
+					app.initialize();
+				}
 			}
 		});
 		button.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -83,7 +87,7 @@ public class RMenu extends JFrame {
 		button_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		button_1.setBounds(94, 190, 205, 42);
 		contentPane.add(button_1);
-		
+
 		JLabel label_2 = new JLabel("");
 		label_2.setBounds(10, 35, 86, 71);
 		contentPane.add(label_2);

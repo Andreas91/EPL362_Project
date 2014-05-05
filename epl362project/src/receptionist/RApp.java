@@ -125,17 +125,7 @@ public class RApp extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(tableApp);
 		scrollPane.setBounds(31, 247, 240, 136);
 		contentPane.add(scrollPane);
-		String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT";
-		Object[][] rs = (Object[][]) client.client.send(str);
-		while (model.getRowCount() != 0)
-			model.removeRow(0);
-		if (rs.length < 2)
-			JOptionPane.showMessageDialog(null, "No clients exist in DB!");
-		else
-			for (int i = 1; i < rs.length; i++) {
-				model.addRow(new Object[] { rs[i][0], rs[i][1], rs[i][2],
-						rs[i][3] });
-			}
+		
 
 		String[] col2 = { "Client ID", "Name", "Surname", "Flagged" };
 		Object[][] data2 = {};
@@ -206,33 +196,12 @@ public class RApp extends JFrame {
 		label_5.setBounds(31, 407, 155, 20);
 		contentPane.add(label_5);
 
-		Object[][] rsl = (Object[][]) client.client
-				.send("SELECT LID,FNAME,LNAME FROM dbo.LAWER");
-		String[] listLawyer = new String[rsl.length];
-		listLawyer[0] = "--Select lawyer--";
-		for (int i = 1; i < listLawyer.length; i++)
-			listLawyer[i] = rsl[i][0].toString() + " - " + rsl[i][1] + " "
-					+ rsl[i][2];
-
-		cbLawyer = new JComboBox(listLawyer);
-		cbLawyer.setBounds(31, 438, 238, 23);
-		contentPane.add(cbLawyer);
+		
 
 		JLabel label_6 = new JLabel("Concerning Case:");
 		label_6.setFont(new Font("Tahoma", Font.BOLD, 15));
 		label_6.setBounds(415, 407, 155, 20);
 		contentPane.add(label_6);
-
-		Object[][] rsc = (Object[][]) client.client
-				.send("SELECT CASEID FROM dbo.CASES");
-		String[] listCase = new String[rsc.length];
-		listCase[0] = "--Select case--";
-		for (int i = 1; i < listCase.length; i++)
-			listCase[i] = rsc[i][0].toString();
-
-		cbCase = new JComboBox(listCase);
-		cbCase.setBounds(415, 438, 240, 23);
-		contentPane.add(cbCase);
 
 		JSeparator separator_3 = new JSeparator();
 		separator_3.setBounds(0, 472, 708, 2);
@@ -339,5 +308,43 @@ public class RApp extends JFrame {
 		btnClear.setFont(new Font("Tahoma", Font.BOLD, 15));
 		btnClear.setBounds(400, 486, 141, 38);
 		contentPane.add(btnClear);
+	}
+	
+	public void initialize(){
+		// Get clients
+		String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT";
+		Object[][] rs = (Object[][]) client.client.send(str);
+		while (model.getRowCount() != 0)
+			model.removeRow(0);
+		if (rs.length < 2)
+			JOptionPane.showMessageDialog(null, "No clients exist in DB!");
+		else
+			for (int i = 1; i < rs.length; i++) {
+				model.addRow(new Object[] { rs[i][0], rs[i][1], rs[i][2],
+						rs[i][3] });
+			}
+		// Get lawyers
+		Object[][] rsl = (Object[][]) client.client
+				.send("SELECT LID,FNAME,LNAME FROM dbo.LAWER");
+		String[] listLawyer = new String[rsl.length];
+		listLawyer[0] = "--Select lawyer--";
+		for (int i = 1; i < listLawyer.length; i++)
+			listLawyer[i] = rsl[i][0].toString() + " - " + rsl[i][1] + " "
+					+ rsl[i][2];
+		cbLawyer = new JComboBox(listLawyer);
+		cbLawyer.setBounds(31, 438, 238, 23);
+		contentPane.add(cbLawyer);
+		
+		// Get cases
+		Object[][] rsc = (Object[][]) client.client
+				.send("SELECT CASEID FROM dbo.CASES");
+		String[] listCase = new String[rsc.length];
+		listCase[0] = "--Select case--";
+		for (int i = 1; i < listCase.length; i++)
+			listCase[i] = rsc[i][0].toString();
+
+		cbCase = new JComboBox(listCase);
+		cbCase.setBounds(415, 438, 240, 23);
+		contentPane.add(cbCase);
 	}
 }
