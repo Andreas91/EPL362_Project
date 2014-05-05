@@ -46,6 +46,7 @@ public class HMBranchReport extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings("rawtypes")
 	public HMBranchReport() {
 		setResizable(false);
 		setBounds(100, 100, 362, 421);

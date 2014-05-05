@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("serial")
 public class RApp extends JFrame {
 
 	private JPanel contentPane;
@@ -45,7 +46,6 @@ public class RApp extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public RApp() {
 		setTitle("Appointment Diary");
 		setResizable(false);
@@ -310,6 +310,7 @@ public class RApp extends JFrame {
 		contentPane.add(btnClear);
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void initialize(){
 		// Get clients
 		String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT";

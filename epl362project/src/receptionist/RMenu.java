@@ -14,6 +14,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+@SuppressWarnings("serial")
 public class RMenu extends JFrame {
 
 	private JPanel contentPane;
