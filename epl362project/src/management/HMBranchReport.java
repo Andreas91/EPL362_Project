@@ -46,12 +46,12 @@ public class HMBranchReport extends JFrame {
 	private JTable tableApp;
 	@SuppressWarnings("rawtypes")
 	private JComboBox cbCaseTypes;
+	@SuppressWarnings("rawtypes")
 	private JComboBox cbRecom;
 
 	/**
 	 * Create the frame.
 	 */
-	@SuppressWarnings("rawtypes")
 	public HMBranchReport() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -378,7 +378,7 @@ public class HMBranchReport extends JFrame {
 		btnShowClients_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Display clients with opinions
-				String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT";
+				String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT WHERE DELETED = 0";
 				Object[][] rs = (Object[][]) client.client.send(str);
 				while (model.getRowCount() != 0)
 					model.removeRow(0);
