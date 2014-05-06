@@ -18,6 +18,12 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
 public class HMBranchReport extends JFrame {
@@ -29,12 +35,6 @@ public class HMBranchReport extends JFrame {
 	private JTextField txtClientsThu;
 	private JTextField txtClientsFri;
 	private JTextField txtClientsTotal;
-	private JTextField txtOpinionsMon;
-	private JTextField txtOpinionsTue;
-	private JTextField txtOpinionsWed;
-	private JTextField txtOpinionsThu;
-	private JTextField txtOpinionsFri;
-	private JTextField txtOpinionsTotal;
 	private JTextField txtCaseClients;
 	private JTextField txtRecomCount;
 	private JLabel lblDate1;
@@ -42,14 +42,20 @@ public class HMBranchReport extends JFrame {
 	private JLabel lblDate3;
 	private JLabel lblDate4;
 	private JLabel lblDate5;
+	private DefaultTableModel model;
+	private JTable tableApp;
+	@SuppressWarnings("rawtypes")
+	private JComboBox cbCaseTypes;
+	private JComboBox cbRecom;
 
 	/**
 	 * Create the frame.
 	 */
 	@SuppressWarnings("rawtypes")
 	public HMBranchReport() {
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
-		setBounds(100, 100, 362, 421);
+		setBounds(100, 100, 703, 390);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -61,7 +67,7 @@ public class HMBranchReport extends JFrame {
 		contentPane.add(label);
 
 		JSeparator separator = new JSeparator();
-		separator.setBounds(0, 41, 356, 2);
+		separator.setBounds(0, 41, 697, 4);
 		contentPane.add(separator);
 
 		JLabel lblDay = new JLabel("Mon");
@@ -250,7 +256,7 @@ public class HMBranchReport extends JFrame {
 		contentPane.add(txtClientsFri);
 
 		JSeparator separator_2 = new JSeparator();
-		separator_2.setBounds(0, 209, 356, 2);
+		separator_2.setBounds(0, 209, 243, 4);
 		contentPane.add(separator_2);
 
 		JLabel lblTotal = new JLabel("Total:");
@@ -269,53 +275,12 @@ public class HMBranchReport extends JFrame {
 		separator_3.setBounds(241, 41, 2, 208);
 		contentPane.add(separator_3);
 
-		JLabel lblOpinionsGiven = new JLabel("Opinions Given:");
-		lblOpinionsGiven.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblOpinionsGiven.setBounds(253, 56, 92, 14);
-		contentPane.add(lblOpinionsGiven);
-
-		txtOpinionsMon = new JTextField();
-		txtOpinionsMon.setEditable(false);
-		txtOpinionsMon.setBounds(253, 78, 86, 20);
-		contentPane.add(txtOpinionsMon);
-		txtOpinionsMon.setColumns(10);
-
-		txtOpinionsTue = new JTextField();
-		txtOpinionsTue.setEditable(false);
-		txtOpinionsTue.setBounds(253, 103, 86, 20);
-		contentPane.add(txtOpinionsTue);
-		txtOpinionsTue.setColumns(10);
-
-		txtOpinionsWed = new JTextField();
-		txtOpinionsWed.setEditable(false);
-		txtOpinionsWed.setBounds(253, 128, 86, 20);
-		contentPane.add(txtOpinionsWed);
-		txtOpinionsWed.setColumns(10);
-
-		txtOpinionsThu = new JTextField();
-		txtOpinionsThu.setEditable(false);
-		txtOpinionsThu.setBounds(253, 153, 86, 20);
-		contentPane.add(txtOpinionsThu);
-		txtOpinionsThu.setColumns(10);
-
-		txtOpinionsFri = new JTextField();
-		txtOpinionsFri.setEditable(false);
-		txtOpinionsFri.setBounds(253, 178, 86, 20);
-		contentPane.add(txtOpinionsFri);
-		txtOpinionsFri.setColumns(10);
-
-		txtOpinionsTotal = new JTextField();
-		txtOpinionsTotal.setEditable(false);
-		txtOpinionsTotal.setBounds(253, 220, 86, 20);
-		contentPane.add(txtOpinionsTotal);
-		txtOpinionsTotal.setColumns(10);
-
 		JSeparator separator_4 = new JSeparator();
-		separator_4.setBounds(0, 247, 356, 2);
+		separator_4.setBounds(0, 247, 697, 2);
 		contentPane.add(separator_4);
 
 		JSeparator separator_5 = new JSeparator();
-		separator_5.setBounds(0, 250, 356, 2);
+		separator_5.setBounds(0, 250, 697, 4);
 		contentPane.add(separator_5);
 
 		JLabel lblCaseTypes = new JLabel("Case Types:");
@@ -323,48 +288,128 @@ public class HMBranchReport extends JFrame {
 		lblCaseTypes.setBounds(10, 260, 76, 14);
 		contentPane.add(lblCaseTypes);
 
-		JComboBox cbCaseTypes = new JComboBox();
-		cbCaseTypes.setBounds(10, 281, 133, 20);
-		contentPane.add(cbCaseTypes);
-
 		JButton btnShowClients = new JButton("Clients Involved");
+		btnShowClients.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (cbCaseTypes.getSelectedIndex() == 0){
+					JOptionPane.showMessageDialog(null, "Select case type!");
+					return;
+				}
+				String q = "SELECT COUNT(DISTINCT CID) FROM dbo.CASES C JOIN dbo.MEETING M ON C.CASEID = M.CASEID WHERE CASE_TYPE = '" + cbCaseTypes.getSelectedItem() + "'";
+				Object[][] res = (Object[][])client.client.send(q);
+				if(res.length < 2){
+					JOptionPane.showMessageDialog(null, "Internal processing error!");
+					return;
+				}
+				int count = Integer.parseInt(res[1][0].toString());
+				txtCaseClients.setText("" + count);
+			}
+		});
 		btnShowClients.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btnShowClients.setBounds(152, 280, 117, 23);
+		btnShowClients.setBounds(10, 316, 151, 23);
 		contentPane.add(btnShowClients);
 
 		txtCaseClients = new JTextField();
 		txtCaseClients.setEditable(false);
-		txtCaseClients.setBounds(279, 281, 60, 20);
+		txtCaseClients.setBounds(183, 317, 60, 20);
 		contentPane.add(txtCaseClients);
 		txtCaseClients.setColumns(10);
 
-		JSeparator separator_6 = new JSeparator();
-		separator_6.setBounds(0, 312, 356, 2);
-		contentPane.add(separator_6);
-
 		JLabel lblLegalRecommendations = new JLabel("Legal Recommendations:");
 		lblLegalRecommendations.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblLegalRecommendations.setBounds(10, 325, 151, 14);
+		lblLegalRecommendations.setBounds(408, 260, 151, 14);
 		contentPane.add(lblLegalRecommendations);
 
-		JComboBox cbRecom = new JComboBox();
-		cbRecom.setBounds(10, 350, 133, 20);
-		contentPane.add(cbRecom);
-
 		JButton btnShowRate = new JButton("Times Given");
+		btnShowRate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (cbRecom.getSelectedIndex() == 0) {
+					JOptionPane.showMessageDialog(null, "Select legal recommendation!");
+					return;
+				}
+				String str = "SELECT COUNT(LRID) FROM dbo.DISPUTE WHERE LRID = " + cbRecom.getSelectedItem().toString().split(" -")[0];
+				Object[][] res = (Object[][]) client.client.send(str);
+				if (res.length < 2) {
+					JOptionPane.showMessageDialog(null, "Internal processing error!");
+					return;
+				}
+				int count = Integer.parseInt(res[1][0].toString());
+				txtRecomCount.setText("" + count);
+			}
+		});
 		btnShowRate.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btnShowRate.setBounds(152, 349, 117, 23);
+		btnShowRate.setBounds(408, 316, 151, 23);
 		contentPane.add(btnShowRate);
 
 		txtRecomCount = new JTextField();
 		txtRecomCount.setEditable(false);
-		txtRecomCount.setBounds(279, 350, 60, 20);
+		txtRecomCount.setBounds(581, 317, 60, 20);
 		contentPane.add(txtRecomCount);
 		txtRecomCount.setColumns(10);
+
+		JSeparator separator_7 = new JSeparator();
+		separator_7.setOrientation(SwingConstants.VERTICAL);
+		separator_7.setBounds(243, 41, 2, 208);
+		contentPane.add(separator_7);
+
+		String[] col = { "Client ID", "Name", "Surname", "Flagged",
+				"Opinions Given" };
+		Object[][] data = {};
+		model = new DefaultTableModel(data, col);
+
+		tableApp = new JTable(model) {
+			private static final long serialVersionUID = 1L;
+
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			};
+		};
+
+		JScrollPane scrollPane = new JScrollPane(tableApp);
+		scrollPane.setBounds(253, 56, 434, 157);
+		contentPane.add(scrollPane);
+
+		JSeparator separator_6 = new JSeparator();
+		separator_6.setOrientation(SwingConstants.VERTICAL);
+		separator_6.setBounds(319, 247, 2, 114);
+		contentPane.add(separator_6);
+
+		JButton btnShowClients_1 = new JButton("Show Clients");
+		btnShowClients_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Display clients with opinions
+				String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT";
+				Object[][] rs = (Object[][]) client.client.send(str);
+				while (model.getRowCount() != 0)
+					model.removeRow(0);
+				if (rs.length < 2)
+					JOptionPane.showMessageDialog(null,
+							"No clients exist in DB!");
+				else {
+					for (int i = 1; i < rs.length; i++) {
+						String str2 = "SELECT COUNT(DISTINCT LOID) FROM dbo.LEGAL_OPINION LO JOIN dbo.MEETING M ON LO.CASEID = M.CASEID WHERE CID = "
+								+ rs[i][0].toString();
+						Object[][] rs2 = (Object[][]) client.client.send(str2);
+						int count = Integer.parseInt(rs2[1][0].toString());
+						model.addRow(new Object[] { rs[i][0], rs[i][1],
+								rs[i][2], rs[i][3], count });
+						// Pause a bit because socket exceptions occur
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException ex) {
+							Thread.currentThread().interrupt();
+						}
+					}
+				}
+			}
+		});
+		btnShowClients_1.setBounds(253, 219, 115, 23);
+		contentPane.add(btnShowClients_1);
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	public void initialize(int bid) {
+		// Display clients attended
 		Date[] dates = new Date[5];
 		dates[0] = new Date(lblDate1.getText());
 		dates[1] = new Date(lblDate2.getText());
@@ -387,8 +432,8 @@ public class HMBranchReport extends JFrame {
 		String[] q = new String[5];
 		Object[][][] result = new Object[5][][];
 		int[] c = new int[5];
-		for (int i = 0; i < 5; i++) {
-			q[i] = "SELECT COUNT(DISTINCT CID) FROM MEETING M JOIN APPOINTMENT A ON M.AID = A.AID WHERE BID = "
+		for (int i = 0; i < c.length; i++) {
+			q[i] = "SELECT COUNT(DISTINCT CID) FROM dbo.MEETING M JOIN dbo.APPOINTMENT A ON M.AID = A.AID WHERE BID = "
 					+ bid
 					+ " AND DATEDIFF(day,ADATE,'"
 					+ t[i].toString()
@@ -402,8 +447,30 @@ public class HMBranchReport extends JFrame {
 		txtClientsThu.setText("" + c[3]);
 		txtClientsFri.setText("" + c[4]);
 		int sum = 0;
-		for(int i:c)
+		for (int i : c)
 			sum += i;
 		txtClientsTotal.setText("" + sum);
+
+		// Display case types
+		String qr = "SELECT DISTINCT CASE_TYPE FROM dbo.CASES";
+		Object[][] rsc = (Object[][]) client.client.send(qr);
+		String[] listCase = new String[rsc.length];
+		listCase[0] = "--Select case type--";
+		for (int i = 1; i < listCase.length; i++)
+			listCase[i] = rsc[i][0].toString();
+		cbCaseTypes = new JComboBox(listCase);
+		cbCaseTypes.setBounds(10, 285, 233, 20);
+		contentPane.add(cbCaseTypes);
+
+		// Get lawyers
+		Object[][] rsl = (Object[][]) client.client
+				.send("SELECT LRID,DESCRIPTION FROM dbo.LEGAL_RECOMMENDATION");
+		String[] listRecom = new String[rsl.length];
+		listRecom[0] = "--Select recommendation--";
+		for (int i = 1; i < listRecom.length; i++)
+			listRecom[i] = rsl[i][0].toString() + " - " + rsl[i][1];
+		cbRecom = new JComboBox(listRecom);
+		cbRecom.setBounds(408, 285, 233, 20);
+		contentPane.add(cbRecom);
 	}
 }
