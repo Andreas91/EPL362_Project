@@ -46,12 +46,12 @@ public class HMBranchReport extends JFrame {
 	private JTable tableApp;
 	@SuppressWarnings("rawtypes")
 	private JComboBox cbCaseTypes;
+	@SuppressWarnings("rawtypes")
 	private JComboBox cbRecom;
 
 	/**
 	 * Create the frame.
 	 */
-	@SuppressWarnings("rawtypes")
 	public HMBranchReport() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(false);
