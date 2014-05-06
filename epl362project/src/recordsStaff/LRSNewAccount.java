@@ -52,7 +52,6 @@ public class LRSNewAccount extends JFrame {
 	/**
 	 * Class constructor. It creates the frame
 	 * for the new account window.
-	 * @param user Staff's username.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public LRSNewAccount() {
