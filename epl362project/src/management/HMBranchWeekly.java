@@ -60,6 +60,10 @@ public class HMBranchWeekly extends JFrame {
 		JButton btnShow = new JButton("SHOW");
 		btnShow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				if (br.isVisible())
+					return;
+				br.dispose();
+				br = new HMBranchReport();
 				String branch = txtBID.getText();
 				int bid = 0;
 				if(branch.length()==0){

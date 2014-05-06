@@ -313,7 +313,7 @@ public class RApp extends JFrame {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void initialize(){
 		// Get clients
-		String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT";
+		String str = "SELECT DISTINCT CID,FNAME,LNAME,FLAG FROM dbo.CLIENT WHERE DELETED = 0";
 		Object[][] rs = (Object[][]) client.client.send(str);
 		while (model.getRowCount() != 0)
 			model.removeRow(0);
