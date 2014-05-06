@@ -55,6 +55,7 @@ public class LSRecom extends JFrame {
 	private JComboBox cbbRec;			// Legal Recommendation combo box
 	private JCheckBox chAccepted;		// Accepted Check box
 	private JButton btnShow;			// Show Description button
+	private JButton btnDelete;			// Delete Dispute button
 	private JButton btnNew;				// New Dispute button
 	private JButton btnSave;			// Save dispute button
 	private JButton btnCancel;			// Cancel new dispute button
@@ -70,7 +71,7 @@ public class LSRecom extends JFrame {
 	 */
 	public LSRecom(int caseid, int cid, String user) {
 		setTitle("Case: " + caseid);
-		setBounds(100, 100, 494, 595);
+		setBounds(100, 100, 578, 595);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -99,7 +100,7 @@ public class LSRecom extends JFrame {
 		
 		// Scroll Pane for Legal Recommendation
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(12, 45, 452, 148);
+		scrollPane.setBounds(12, 45, 536, 148);
 		contentPane.add(scrollPane);
 
 		// Show L.R. button
@@ -130,6 +131,7 @@ public class LSRecom extends JFrame {
 				// Enable/Disable buttons
 				table.setEnabled(false);
 				btnShow.setEnabled(false);
+				btnDelete.setEnabled(false);
 				btnNew.setEnabled(false);
 				btnSave.setEnabled(true);
 				btnCancel.setEnabled(true);
@@ -142,7 +144,7 @@ public class LSRecom extends JFrame {
 			}
 		});
 		btnNew.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		btnNew.setBounds(118, 206, 97, 25);
+		btnNew.setBounds(230, 207, 97, 25);
 		contentPane.add(btnNew);
 		
 		// Save New L.R button
@@ -172,8 +174,38 @@ public class LSRecom extends JFrame {
 		});
 		btnSave.setEnabled(false);
 		btnSave.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		btnSave.setBounds(227, 206, 97, 25);
+		btnSave.setBounds(339, 207, 97, 25);
 		contentPane.add(btnSave);
+		
+		// Delete L.R. button
+		btnDelete = new JButton("- Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (table.getSelectedRowCount() != 1) {
+					JOptionPane.showMessageDialog(null,"Select a row first!");
+				} else {
+					int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this record?");
+					if (option==0){
+						int row = table.getSelectedRow();
+						Object o = model.getValueAt(row, 1);
+						String tdate = o.toString();
+						
+						String str = "Delete FROM dbo.DISPUTE WHERE DIS_DATE='"+tdate+"' AND CASEID='"+caseID+"'";
+						if (!(boolean)client.send(str)){
+							JOptionPane.showMessageDialog(null, "Unable to delete from DB!");
+						}
+						else{
+							saveTransaction("Delete a recommendation for case: "+caseID);
+							model.removeRow(row);
+							JOptionPane.showMessageDialog(null, "Record deleted!");
+						}
+					}
+				}
+			}
+		});
+		btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnDelete.setBounds(121, 207, 97, 25);
+		contentPane.add(btnDelete);
 		
 		// Cancel New L.R. button
 		btnCancel = new JButton("Cancel");
@@ -182,6 +214,7 @@ public class LSRecom extends JFrame {
 				// Enable/Disable buttons
 				table.setEnabled(true);
 				btnShow.setEnabled(true);
+				btnDelete.setEnabled(true);
 				btnNew.setEnabled(true);
 				btnSave.setEnabled(false);
 				btnCancel.setEnabled(false);
@@ -195,7 +228,7 @@ public class LSRecom extends JFrame {
 		});
 		btnCancel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnCancel.setEnabled(false);
-		btnCancel.setBounds(336, 206, 97, 25);
+		btnCancel.setBounds(448, 207, 97, 25);
 		contentPane.add(btnCancel);
 		
 		// Legal Recommendations ComboBox
@@ -234,7 +267,7 @@ public class LSRecom extends JFrame {
 		
 		// Description Scroll Pane
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(12, 363, 452, 174);
+		scrollPane_1.setBounds(12, 363, 536, 174);
 		contentPane.add(scrollPane_1);
 		
 		// Description Text Area
