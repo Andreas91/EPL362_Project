@@ -51,8 +51,7 @@ public class ServerTest {
 				"UPDATE dbo.USERS SET ROLE = 1 WHERE USERNAME = 'test'",
 				"DELETE FROM dbo.USERS WHERE USERNAME = 'test'" };
 		for (String i : str)
-			assertTrue("Error in executeUpdate()! -> " + i,
-					(boolean) server.executeUpdate(i));
+			assertTrue("Error in executeUpdate()! -> " + i,(boolean) server.executeUpdate(i));
 		// Close database connection
 		assertTrue("Error in closeDBConnection()!", server.closeDBConnection());
 	}
