@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Andreas Andreou & Maria Christodoulou
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package server;
 
 import java.io.*;
@@ -10,20 +26,44 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
 
+/**
+ * The server class implements the server communicating with the SQLServer 
+ * database to execute statements (sent and received as Objects).
+ * @author Maria Christodoulou
+ * @author Andreas Andreou
+ * @version 1.0
+ */
 public class server implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Server side socket
+	 */
 	private static ServerSocket sock;
+	
+	/**
+	 * Client side socket
+	 */
 	static Socket cSock;
+	
+	/**
+	 * Boolean to check if JDBC driver is loaded
+	 */
 	private static boolean dbDriverLoaded = false;
+	
+	/**
+	 * Connection to SQLServer database
+	 */
 	private static Connection conn = null;
 
+	/**
+	 * Connects to the SQLServer database.
+	 * 
+	 * @return <tt>true</tt> on success, <tt>false</tt> otherwise
+	 */
 	static boolean getDBConnection() {
 
 		String dbConnString = "jdbc:sqlserver://apollo.in.cs.ucy.ac.cy:1433;databaseName=lawcs;user=lawcs;password=H9pCFzXb;";
@@ -52,6 +92,11 @@ public class server implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Closes an empty SQLServer connection.
+	 * 
+	 * @return <tt>true</tt> on success, <tt>false</tt> otherwise
+	 */
 	static boolean closeDBConnection() {
 		try {
 			if (conn != null && !conn.isClosed())
@@ -63,6 +108,11 @@ public class server implements Serializable {
 		}
 	}
 
+	/**
+	 * Opens a socket for accepting connections from clients.
+	 * 
+	 * @return <tt>true</tt> on success, <tt>false</tt> otherwise
+	 */
 	static boolean openSocket() {
 		try {
 			sock = new ServerSocket(6789);
@@ -75,6 +125,9 @@ public class server implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Closes the server's socket.
+	 */
 	static void closeSocket() {
 		if (!sock.isClosed())
 			try {
@@ -92,6 +145,12 @@ public class server implements Serializable {
 			}
 	}
 
+	/**
+	 * Executes a query on the SQLServer database and returns its ResultSet.
+	 * 
+	 * @param str The SQL query to be executed
+	 * @return The ResultSet returned from execution
+	 */
 	static ResultSet getResultSet(String str) {
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -105,6 +164,16 @@ public class server implements Serializable {
 		}
 	}
 
+	/**
+	 * Sends a SQL SELECT query to be executed on the SQLServer database 
+	 * (calls the getResultSet() function) and returns a modified ResultSet.
+	 * 
+	 * @param query The SQL query to be sent for execution
+	 * @return A modified ResultSet to a Object[][] array with the first row 
+	 * being the names of the returned columns of the ResultSet, or <tt>null</tt> 
+	 * if a problem occurs.
+	 * @throws SQLException If there is a problem processing the ResultSet
+	 */
 	public static Object[][] executeQuery(String query) throws SQLException {
 		ResultSet rs = getResultSet(query);
 		if (rs == null)
@@ -145,6 +214,11 @@ public class server implements Serializable {
 		return finalResult;
 	}
 
+	/**
+	 * Executes a SQL INSERT, UPDATE or DELETE query on the SQL Server.
+	 * @param str The SQL query to be executed
+	 * @return <tt>true</tt> on success, <tt>false</tt> otherwise (cast as Object)
+	 */
 	public static Object executeUpdate(String str) {
 		Statement stmt = null;
 		try {
@@ -158,29 +232,34 @@ public class server implements Serializable {
 	}
 
 	public static void main(String argv[]) throws Exception {
-
+		// Connect with database
 		System.out.print("> Connecting with database...");
 		if (!getDBConnection()) {
 			System.out.println("Error!");
 			return;
 		}
 		System.out.println("Done!");
-
 		System.out.println("> Waiting for client...");
+		
+		// Keep running to respond to client connections
 		while (true) {
+			// Open socket to listen to connections
 			openSocket();
-			ObjectInputStream inFromClient = new ObjectInputStream(
-					cSock.getInputStream());
-			ObjectOutputStream outToClient = new ObjectOutputStream(
-					cSock.getOutputStream());
+			// Input / output streams to communicate with client
+			ObjectInputStream inFromClient = new ObjectInputStream(cSock.getInputStream());
+			ObjectOutputStream outToClient = new ObjectOutputStream(cSock.getOutputStream());
+			// Read data sent from client
 			String Oin = (String) inFromClient.readObject();
 			System.out.println("> Receive: " + Oin);
+			// Sent query to execution according to type of statement (SELECT, INSERT...)
 			Object Oout = null;
 			if (Oin.charAt(0) == 'S' || Oin.charAt(0) == 's')
 				Oout = executeQuery(Oin);
 			else
 				Oout = executeUpdate(Oin);
+			// Send result to client
 			outToClient.writeObject(Oout);
+			// Close client connection
 			closeSocket();
 		}
 	}

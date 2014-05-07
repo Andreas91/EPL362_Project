@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Maria Christodoulou
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package management;
 
 import java.awt.Font;
@@ -25,32 +41,40 @@ import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/**
+ * Manager's weekly report for a branch.
+ * 
+ * @author Maria Christodoulou
+ * @version 1.0
+ *
+ */
 @SuppressWarnings("serial")
 public class HMBranchReport extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField txtClientsMon;
-	private JTextField txtClientsTue;
-	private JTextField txtClientsWed;
-	private JTextField txtClientsThu;
-	private JTextField txtClientsFri;
-	private JTextField txtClientsTotal;
-	private JTextField txtCaseClients;
-	private JTextField txtRecomCount;
-	private JLabel lblDate1;
-	private JLabel lblDate2;
-	private JLabel lblDate3;
-	private JLabel lblDate4;
-	private JLabel lblDate5;
-	private DefaultTableModel model;
-	private JTable tableApp;
+	private JTextField txtClientsMon;		// # of clients on Monday
+	private JTextField txtClientsTue;		// # of clients on Tuesday
+	private JTextField txtClientsWed;		// # of clients on Wednesday
+	private JTextField txtClientsThu;		// # of clients on Thursday
+	private JTextField txtClientsFri;		// # of clients on Friday
+	private JTextField txtClientsTotal;		// # of clients for the week
+	private JTextField txtCaseClients;		// # of clients involved in a case type
+	private JTextField txtRecomCount;		// # of times a recommendation was given
+	private JLabel lblDate1;				// Monday's date
+	private JLabel lblDate2;				// Tuesday's date
+	private JLabel lblDate3;				// Wednesday's date
+	private JLabel lblDate4;				// Thursday's date
+	private JLabel lblDate5;				// Friday's date
+	private DefaultTableModel model;		
+	private JTable tableApp;				// Table of clients and opinions given
 	@SuppressWarnings("rawtypes")
-	private JComboBox cbCaseTypes;
+	private JComboBox cbCaseTypes;			// Available case types
 	@SuppressWarnings("rawtypes")
-	private JComboBox cbRecom;
+	private JComboBox cbRecom;				// Available recommendations
 
 	/**
-	 * Create the frame.
+	 * Class constructor, creates the frame.
+	 * 
 	 */
 	public HMBranchReport() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -61,6 +85,7 @@ public class HMBranchReport extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		// Title
 		JLabel label = new JLabel("Weekly Branch Report");
 		label.setFont(new Font("Tahoma", Font.BOLD, 15));
 		label.setBounds(102, 11, 167, 19);
@@ -70,6 +95,7 @@ public class HMBranchReport extends JFrame {
 		separator.setBounds(0, 41, 697, 4);
 		contentPane.add(separator);
 
+		// Date labels
 		JLabel lblDay = new JLabel("Mon");
 		lblDay.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblDay.setBounds(10, 81, 46, 14);
@@ -204,7 +230,6 @@ public class HMBranchReport extends JFrame {
 			cal.add(Calendar.DATE, -1);
 			lblDate1.setText(df.format(cal.getTime()));
 		} else if (today.format(dateobj).compareToIgnoreCase("sat") == 0) {
-			// Fri, Sat, Sun display this week's stats
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
 			lblDate5.setText(df.format(cal.getTime()));
@@ -217,7 +242,6 @@ public class HMBranchReport extends JFrame {
 			cal.add(Calendar.DATE, -1);
 			lblDate1.setText(df.format(cal.getTime()));
 		} else if (today.format(dateobj).compareToIgnoreCase("sun") == 0) {
-			// Fri, Sat, Sun display this week's stats
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -2);
 			lblDate5.setText(df.format(cal.getTime()));
@@ -352,6 +376,7 @@ public class HMBranchReport extends JFrame {
 		separator_7.setBounds(243, 41, 2, 208);
 		contentPane.add(separator_7);
 
+		// Table of clients and opinions given
 		String[] col = { "Client ID", "Name", "Surname", "Flagged",
 				"Opinions Given" };
 		Object[][] data = {};
@@ -374,6 +399,7 @@ public class HMBranchReport extends JFrame {
 		separator_6.setBounds(319, 247, 2, 114);
 		contentPane.add(separator_6);
 
+		// Shows available clients and legal opinions given to them
 		JButton btnShowClients_1 = new JButton("Show Clients");
 		btnShowClients_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -383,8 +409,7 @@ public class HMBranchReport extends JFrame {
 				while (model.getRowCount() != 0)
 					model.removeRow(0);
 				if (rs.length < 2)
-					JOptionPane.showMessageDialog(null,
-							"No clients exist in DB!");
+					JOptionPane.showMessageDialog(null, "No clients exist in DB!");
 				else {
 					for (int i = 1; i < rs.length; i++) {
 						String str2 = "SELECT COUNT(DISTINCT LOID) FROM dbo.LEGAL_OPINION LO JOIN dbo.MEETING M ON LO.CASEID = M.CASEID WHERE CID = "
@@ -407,6 +432,11 @@ public class HMBranchReport extends JFrame {
 		contentPane.add(btnShowClients_1);
 	}
 
+	/**
+	 * Initializes parameters and SQL queries for this viewpoint based on 
+	 * the Branch ID sent from the HMBranchWeekly screen.
+	 * @param bid Branch ID
+	 */
 	@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
 	public void initialize(int bid) {
 		// Display clients attended
