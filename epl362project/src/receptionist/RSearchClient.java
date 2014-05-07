@@ -211,7 +211,7 @@ public class RSearchClient extends JFrame {
 				if(tableApp.getSelectedRowCount() < 1)
 					JOptionPane.showMessageDialog(null,"Select an appointment first!");
 				else{
-					for(int i=0;i<tableApp.getSelectedRowCount();i++){
+					for(int i:tableApp.getSelectedRows()){
 						String str = "UPDATE dbo.MEETING SET ATTENDED = 1 WHERE AID = "+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
 						if((boolean)client.client.send(str))
 							JOptionPane.showMessageDialog(null,"Appointments marked as attended!");
@@ -232,7 +232,7 @@ public class RSearchClient extends JFrame {
 				if(tableApp.getSelectedRowCount() < 1)
 					JOptionPane.showMessageDialog(null,"Select an appointment first!");
 				else{
-					for(int i=0;i<tableApp.getSelectedRowCount();i++){
+					for(int i:tableApp.getSelectedRows()){
 						String str = "UPDATE dbo.MEETING SET ATTENDED = 0 WHERE AID = "+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
 						if((boolean)client.client.send(str))
 							JOptionPane.showMessageDialog(null,"Appointments marked as missed!");

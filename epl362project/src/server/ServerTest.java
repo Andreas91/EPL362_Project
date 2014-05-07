@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 Maria Christodoulou
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package server;
 
 import static org.junit.Assert.*;
@@ -11,8 +26,17 @@ import java.sql.SQLException;
 
 import org.junit.Test;
 
+/**
+ * Unit testing file for server and client components
+ * @author Maria Christodoulou
+ * @version 1.0
+ *
+ */
 public class ServerTest {
 
+	/**
+	 * Tests whether the appropriate tables exist in the database.
+	 */
 	@Test
 	public void checkTables() {
 		// Open database connection
@@ -29,6 +53,10 @@ public class ServerTest {
 		assertTrue("Error in closeDBConnection()!", server.closeDBConnection());
 	}
 
+	/**
+	 * Tests whether the server responds correctly when an invalid SQL query 
+	 * is sent.
+	 */
 	@Test
 	public void checkTableSyntax() {
 		// Open database connection
@@ -41,6 +69,9 @@ public class ServerTest {
 		assertTrue("Error in closeDBConnection()!", server.closeDBConnection());
 	}
 
+	/**
+	 * Checks INSERT, UPDATE, DELETE SQL statements.
+	 */
 	@Test
 	public void checkDatabaseFunctions() {
 		// Open database connection
@@ -56,6 +87,13 @@ public class ServerTest {
 		assertTrue("Error in closeDBConnection()!", server.closeDBConnection());
 	}
 
+	/**
+	 * Checks socket connection between server / client, using a thread class 
+	 * to act as a client.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	@Test
 	public void checkSocket() throws IOException, ClassNotFoundException,
 			SQLException {
