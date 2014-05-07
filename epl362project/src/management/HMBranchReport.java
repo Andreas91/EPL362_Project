@@ -164,7 +164,7 @@ public class HMBranchReport extends JFrame {
 
 		// use current date as basis for labels
 		DateFormat today = new SimpleDateFormat("E");
-		DateFormat df = new SimpleDateFormat("dd/MM/yy");
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 		Date dateobj = new Date();
 
 		// Mon - Thu display last week's stats
@@ -441,11 +441,31 @@ public class HMBranchReport extends JFrame {
 	public void initialize(int bid) {
 		// Display clients attended
 		Date[] dates = new Date[5];
-		dates[0] = new Date(lblDate1.getText());
-		dates[1] = new Date(lblDate2.getText());
-		dates[2] = new Date(lblDate3.getText());
-		dates[3] = new Date(lblDate4.getText());
-		dates[4] = new Date(lblDate5.getText());
+		String[] date = lblDate1.getText().split("/");
+		int y = Integer.parseInt(date[2]);
+		int m = Integer.parseInt(date[1]);
+		int d = Integer.parseInt(date[0]);
+		dates[0] = new Date(y-1900,m-1,d);
+		date = lblDate2.getText().split("/");
+		y = Integer.parseInt(date[2]);
+		m = Integer.parseInt(date[1]);
+		d = Integer.parseInt(date[0]);
+		dates[1] = new Date(y-1900,m-1,d);
+		date = lblDate3.getText().split("/");
+		y = Integer.parseInt(date[2]);
+		m = Integer.parseInt(date[1]);
+		d = Integer.parseInt(date[0]);
+		dates[2] = new Date(y-1900,m-1,d);
+		date = lblDate4.getText().split("/");
+		y = Integer.parseInt(date[2]);
+		m = Integer.parseInt(date[1]);
+		d = Integer.parseInt(date[0]);
+		dates[3] = new Date(y-1900,m-1,d);
+		date = lblDate5.getText().split("/");
+		y = Integer.parseInt(date[2]);
+		m = Integer.parseInt(date[1]);
+		d = Integer.parseInt(date[0]);
+		dates[4] = new Date(y-1900,m-1,d);
 		Timestamp[] t = new Timestamp[5];
 		try {
 			for (int i = 0; i < t.length; i++) {
