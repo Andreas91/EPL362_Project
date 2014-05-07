@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Maria Christodoulou
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package receptionist;
 
 import java.awt.Font;
@@ -19,17 +35,25 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * Frame from the receptionist's viewpoint, allows a receptionist to search 
+ * for a client and mark their appointments as attended or missed.
+ * @author Maria Christodoulou
+ * @version 1.0
+ *
+ */
 @SuppressWarnings("serial")
 public class RSearchClient extends JFrame {
 
 	private JPanel contentPane;
 	private DefaultTableModel model;
-	private JTextField txtSearchSurname;
-	private JTextField txtSearchID;
-	private JTextField txtID;
-	private JTextField txtName;
-	private JTextField txtSurname;
-	private JTable tableApp;
+	private JTextField txtSearchSurname;	// Search with surname
+	private JTextField txtSearchID;			// Search with ID
+	private JTextField txtID;				// Client ID
+	private JTextField txtName;				// Client name
+	private JTextField txtSurname;			// Client surname
+	JCheckBox chbFlag;						// Client flag
+	private JTable tableApp;				// Table of client's appointments
 
 	/**
 	 * Create the frame.
@@ -43,11 +67,13 @@ public class RSearchClient extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		// Title
 		JLabel label = new JLabel("Search Client");
 		label.setFont(new Font("Tahoma", Font.BOLD, 20));
 		label.setBounds(239, 36, 209, 25);
 		contentPane.add(label);
 
+		// Appointment details
 		String[] col = { "Client","A/a", "Branch ID", "Case ID", "Date/Time" };
 		Object[][] data = {};
 		model = new DefaultTableModel(data, col);
@@ -60,6 +86,7 @@ public class RSearchClient extends JFrame {
 			};
 		};
 		
+		// App logo
 		JLabel logo = new JLabel("");
 		logo.setIcon(new ImageIcon("LogoSmall.png"));
 		logo.setBounds(10, 11, 86, 71);
@@ -131,7 +158,7 @@ public class RSearchClient extends JFrame {
 		label_5.setBounds(160, 277, 42, 25);
 		contentPane.add(label_5);
 		
-		final JCheckBox chbFlag = new JCheckBox("");
+		chbFlag = new JCheckBox("");
 		chbFlag.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		chbFlag.setEnabled(false);
 		chbFlag.setBounds(208, 277, 49, 25);
@@ -177,6 +204,7 @@ public class RSearchClient extends JFrame {
 		label_9.setBounds(260, 356, 71, 20);
 		contentPane.add(label_9);
 				
+		// Marks selected appointment as attended
 		JButton btnAttend = new JButton("Attended");
 		btnAttend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -184,7 +212,7 @@ public class RSearchClient extends JFrame {
 					JOptionPane.showMessageDialog(null,"Select an appointment first!");
 				else{
 					for(int i=0;i<tableApp.getSelectedRowCount();i++){
-						String str = "UPDATE dbo.MEETING SET ATTENDED = 1 WHERE AID="+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
+						String str = "UPDATE dbo.MEETING SET ATTENDED = 1 WHERE AID = "+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
 						if((boolean)client.client.send(str))
 							JOptionPane.showMessageDialog(null,"Appointments marked as attended!");
 						else
@@ -197,6 +225,7 @@ public class RSearchClient extends JFrame {
 		btnAttend.setBounds(341, 355, 107, 23);
 		contentPane.add(btnAttend);
 		
+		// Marks selected appointment as missed
 		JButton btnMiss = new JButton("Not Attended");
 		btnMiss.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -204,7 +233,7 @@ public class RSearchClient extends JFrame {
 					JOptionPane.showMessageDialog(null,"Select an appointment first!");
 				else{
 					for(int i=0;i<tableApp.getSelectedRowCount();i++){
-						String str = "UPDATE dbo.MEETING SET ATTENDED = 0 WHERE AID="+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
+						String str = "UPDATE dbo.MEETING SET ATTENDED = 0 WHERE AID = "+tableApp.getValueAt(i, 1)+" AND CID="+tableApp.getValueAt(i, 0)+" AND CASEID="+tableApp.getValueAt(i,3);
 						if((boolean)client.client.send(str))
 							JOptionPane.showMessageDialog(null,"Appointments marked as missed!");
 						else
@@ -217,6 +246,8 @@ public class RSearchClient extends JFrame {
 		btnMiss.setBounds(458, 355, 119, 23);
 		contentPane.add(btnMiss);
 		
+		// Search for client using last name, client must be active
+		// Load all client's appointments
 		btnSearchSurname.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String lname;
@@ -249,6 +280,8 @@ public class RSearchClient extends JFrame {
 			}
 		});
 
+		// Search for client using client id, client must be active
+		// Load all client's appointments
 		btnSearchID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String id;

@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Maria Christodoulou
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package receptionist;
 
 import java.awt.Font;
@@ -25,26 +41,33 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/**
+ * Frame from the receptionist's viewpoint, allows a receptionist to insert 
+ * a new appointment
+ * @author Maria Christodoulou
+ * @version 1.0
+ *
+ */
 @SuppressWarnings("serial")
 public class RApp extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField txtBranch;
+	private JTextField txtBranch;			// Branch ID
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private DefaultTableModel model;
 	private DefaultTableModel model2;
-	private JTable tableApp;
-	private JTable tableApp2;
-	JSpinner spDate;
-	JRadioButton rbScheduled;
-	JRadioButton rbDropin;
+	private JTable tableApp;				// Available clients
+	private JTable tableApp2;				// Clients involved in appointment					
+	JSpinner spDate;						// Appointment date
+	JRadioButton rbScheduled;				// Type scheduled
+	JRadioButton rbDropin;					// Type drop-in
 	@SuppressWarnings("rawtypes")
-	JComboBox cbLawyer;
-	@SuppressWarnings("rawtypes")
-	JComboBox cbCase;
+	JComboBox cbLawyer;						// Available lawyers
+	@SuppressWarnings("rawtypes")	
+	JComboBox cbCase;						// Available cases
 
 	/**
-	 * Create the frame.
+	 * Class constructor, creates the frame.
 	 */
 	public RApp() {
 		setTitle("Appointment Diary");
@@ -55,6 +78,7 @@ public class RApp extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		// Title
 		JLabel label = new JLabel("Schedule Appointment");
 		label.setFont(new Font("Tahoma", Font.BOLD, 20));
 		label.setBounds(228, 28, 240, 50);
@@ -69,6 +93,7 @@ public class RApp extends JFrame {
 		label_1.setBounds(31, 131, 46, 14);
 		contentPane.add(label_1);
 
+		// Spinner for appointment date
 		spDate = new JSpinner();
 		spDate.setModel(new SpinnerDateModel(new Date(1398546000000L), null,
 				null, Calendar.DAY_OF_YEAR));
@@ -80,6 +105,7 @@ public class RApp extends JFrame {
 		label_2.setBounds(311, 131, 84, 14);
 		contentPane.add(label_2);
 
+		// Text box for Branch ID
 		txtBranch = new JTextField();
 		txtBranch.setText("N/A");
 		txtBranch.setColumns(10);
@@ -91,6 +117,7 @@ public class RApp extends JFrame {
 		label_3.setBounds(495, 128, 46, 20);
 		contentPane.add(label_3);
 
+		// Radio buttons for appointment type
 		rbScheduled = new JRadioButton("Scheduled");
 		buttonGroup.add(rbScheduled);
 		rbScheduled.setBounds(562, 129, 109, 23);
@@ -110,6 +137,7 @@ public class RApp extends JFrame {
 		label_4.setBounds(31, 203, 133, 14);
 		contentPane.add(label_4);
 
+		// Table of available clients
 		String[] col = { "Client ID", "Name", "Surname", "Flagged" };
 		Object[][] data = {};
 		model = new DefaultTableModel(data, col);
@@ -126,7 +154,7 @@ public class RApp extends JFrame {
 		scrollPane.setBounds(31, 247, 240, 136);
 		contentPane.add(scrollPane);
 		
-
+		// Table of clients attending appointment
 		String[] col2 = { "Client ID", "Name", "Surname", "Flagged" };
 		Object[][] data2 = {};
 		model2 = new DefaultTableModel(data2, col2);
@@ -143,6 +171,7 @@ public class RApp extends JFrame {
 		scrollPane_1.setBounds(415, 247, 240, 136);
 		contentPane.add(scrollPane_1);
 
+		// Marks clients to attend, from list of available clients
 		JButton btnAdd = new JButton(">> Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -165,6 +194,7 @@ public class RApp extends JFrame {
 		btnAdd.setBounds(281, 283, 118, 23);
 		contentPane.add(btnAdd);
 
+		// Removes clients from attending back to list of available clients
 		JButton btnRemove = new JButton("<< Remove");
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -196,8 +226,6 @@ public class RApp extends JFrame {
 		label_5.setBounds(31, 407, 155, 20);
 		contentPane.add(label_5);
 
-		
-
 		JLabel label_6 = new JLabel("Concerning Case:");
 		label_6.setFont(new Font("Tahoma", Font.BOLD, 15));
 		label_6.setBounds(415, 407, 155, 20);
@@ -207,11 +235,15 @@ public class RApp extends JFrame {
 		separator_3.setBounds(0, 472, 708, 2);
 		contentPane.add(separator_3);
 
+		// Saves appointment in database
 		JButton btnSave = new JButton("SAVE");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Appointment date
 				Date apDate = (Date) spDate.getValue();
 			    java.sql.Timestamp sqlDate = new java.sql.Timestamp(apDate.getTime());
+			    
+			    // Branch ID
 				int bid;
 				try {
 					bid = Integer.parseInt(txtBranch.getText());
@@ -219,6 +251,8 @@ public class RApp extends JFrame {
 					JOptionPane.showMessageDialog(null, "Invalid Branch ID!");
 					return;
 				}
+				
+				// Appointment type
 				boolean scheduled;
 				if(rbScheduled.isSelected())
 					scheduled = true;
@@ -228,18 +262,26 @@ public class RApp extends JFrame {
 					JOptionPane.showMessageDialog(null, "Appointment type not specified!");
 					return;
 				}
+				
+				// Attending clients
 				if(tableApp2.getRowCount()==0){
 					JOptionPane.showMessageDialog(null, "No clients selected!");
 					return;
 				}
+				
+				// Attending lawyer
 				if(cbLawyer.getSelectedIndex()==0){
 					JOptionPane.showMessageDialog(null, "No lawyer selected!");
 					return;
 				}
+				
+				// Concerning case
 				if(cbCase.getSelectedIndex()==0){
 					JOptionPane.showMessageDialog(null, "No case selected!");
 					return;
 				}
+				
+				// Find lawyer's username since it's saved in the MEETING table
 				String getLUser = "SELECT USERNAME FROM dbo.LAWER WHERE LID="+(cbLawyer.getSelectedItem().toString().split("-")[0]);
 				Object[][] lUser = (Object[][]) client.client.send(getLUser);
 				if(lUser.length!=2){
@@ -247,17 +289,20 @@ public class RApp extends JFrame {
 					return;
 				}
 				String username = (String)lUser[1][0];
+				
 				// Insert in table Appointment
 				String str1 = "INSERT INTO dbo.APPOINTMENT(BID,ADATE,SCHEDULED) VALUES("+bid+",'"+sqlDate+"',"+(scheduled?1:0)+")";
 				if(!(boolean)client.client.send(str1)){
 					JOptionPane.showMessageDialog(null, "Error inserting appointment!");
 					return;
 				}
-				//Get this appointment's id
+				
+				// Get this appointment's id to insert in the MEETING table
 				String getid = "SELECT AID FROM dbo.APPOINTMENT ORDER BY AID DESC";
 				Object[][] rs = (Object[][]) client.client.send(getid);
 				int apid = (int)rs[1][0];
-				//Insert in table Meeting
+				
+				// Insert in table MEETING
 				for(int i=0;i<tableApp2.getRowCount();i++){
 					String str2 = "INSERT INTO dbo.MEETING(AID,CID,LUSER,CASEID) VALUES("+apid+","+tableApp2.getValueAt(i, 0)+",'"+username+"',"+cbCase.getSelectedItem()+")";
 					if(!(boolean)client.client.send(str2)){
@@ -272,27 +317,38 @@ public class RApp extends JFrame {
 		btnSave.setBounds(156, 485, 141, 38);
 		contentPane.add(btnSave);
 
+		// App logo
 		JLabel logo = new JLabel("");
 		logo.setIcon(new ImageIcon("LogoSmall.png"));
 		logo.setBounds(10, 11, 86, 71);
 		contentPane.add(logo);
 
+		// Available clients
 		JLabel lblExistingClients = new JLabel("Existing clients:");
 		lblExistingClients.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblExistingClients.setBounds(31, 228, 118, 14);
 		contentPane.add(lblExistingClients);
 
+		// Attending clients
 		JLabel lblAttendingClients = new JLabel("Attending clients:");
 		lblAttendingClients.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblAttendingClients.setBounds(415, 229, 126, 14);
 		contentPane.add(lblAttendingClients);
 
+		// Resets form 
 		JButton btnClear = new JButton("CLEAR");
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				// Set default date
 				spDate.setValue(new Date(1398546000000L));
+				
+				// Clear branch ID
 				txtBranch.setText("N/A");
+				
+				// Clear appointment type selection
 				buttonGroup.clearSelection();
+				
+				// Clear attending clients table
 				while(tableApp2.getRowCount()>0){
 						model.addRow(new Object[] { model2.getValueAt(0, 0),
 								model2.getValueAt(0, 1),
@@ -301,7 +357,11 @@ public class RApp extends JFrame {
 						model2.removeRow(0);
 					
 				}
+				
+				// Clear lawyer selection
 				cbLawyer.setSelectedIndex(0);
+				
+				// Clear case selection
 				cbCase.setSelectedIndex(0);
 			}
 		});
@@ -310,6 +370,9 @@ public class RApp extends JFrame {
 		contentPane.add(btnClear);
 	}
 	
+	/**
+	 * Initializes the current frame, returns available clients, lawyers and cases.
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void initialize(){
 		// Get clients
